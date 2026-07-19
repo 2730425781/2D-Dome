@@ -1,0 +1,28 @@
+﻿# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+*.user
+*.userprefs
+*.unityproj
+*.csproj
+*.sln
+*.suo
+*.pidb
+*.booproj
+.vs/
+.idea/
+*.DotSettings.user
+*.DotSettings
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Git
+.gitattributes
