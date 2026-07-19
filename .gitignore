@@ -19,6 +19,10 @@
 *.DotSettings.user
 *.DotSettings
 
+# IDE
+.vscode/
+*.slnx
+
 # OS
 .DS_Store
 Thumbs.db
