@@ -6,17 +6,17 @@ using UnityEngine;
 /// 
 /// 为什么单独挂在一个子物体上而不是在角色主物体上接收事件：
 /// 1. 动画事件只能发送给挂载了 Animator 的游戏对象或它的子物体
-/// 2. 子物体上挂这个脚本，主物体上的 Entity/Entity_ComBat 保持独立职责
+/// 2. 子物体上挂这个脚本，主物体上的 Entity/Entity_Combat 保持独立职责
 /// </summary>
 public class Entity_AnimationTriggers : MonoBehaviour
 {
     private Entity entity;
-    private Entity_ComBat entityComBat;
+    private Entity_Combat entityCombat;
 
     protected virtual void Awake()
     {
         entity = GetComponentInParent<Entity>();
-        entityComBat = GetComponentInParent<Entity_ComBat>();
+        entityCombat = GetComponentInParent<Entity_Combat>();
     }
 
     /// <summary>
@@ -33,6 +33,6 @@ public class Entity_AnimationTriggers : MonoBehaviour
     /// </summary>
     private void AttackTrigger()
     {
-        entityComBat.PerformAttack();
+        entityCombat.PerformAttack();
     }
 }

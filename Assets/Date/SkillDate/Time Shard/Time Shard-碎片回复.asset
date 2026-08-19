@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 657820f563d552146b90e25a55d50d5e, type: 3}
+  m_Name: "Time Shard-\u788E\u7247\u56DE\u590D"
+  m_EditorClassIdentifier: Assembly-CSharp::Skill_DataSO
+  cost: 3
+  unlockedByDefault: 0
+  skillType: 2
+  upgradeDate:
+    upgradeType: 10
+    cooldown: 4
+  displayName: "\u788E\u7247\u56DE\u590D"
+  description: "\u5728\u4F20\u9001\u4F1A\u788E\u7247\u65F6\u4F1A\u56DE\u590D\u5230\u5F53\u65F6\u7684\u751F\u547D\u503C"
+  icon: {fileID: 1494906479, guid: cba94a78b0c39414c8eb0ff013b15e60, type: 3}

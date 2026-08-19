@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59be6a0a6803ee949958046135e5248d, type: 3}
+  m_Name: "\u6280\u80FD\u70B9\u6548\u679C\u8BBE\u7F6E-\u589E\u52A0\u6280\u80FD\u70B9"
+  m_EditorClassIdentifier: Assembly-CSharp::ItemEffectSO_SkillPoint
+  effectDescription: "\u83B7\u5F97\u4E00\u70B9\u6280\u80FD\u70B9"
+  points: 1

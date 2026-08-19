@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af6f321d57288dc4aa75e21ed236435b, type: 3}
+  m_Name: "\u6CBB\u7597\u6548\u679C\u6570\u636E\u8BBE\u7F6E-\u56DE\u590D10%\u751F\u547D\u503C"
+  m_EditorClassIdentifier: Assembly-CSharp::ItemEffectSO_Heal
+  effectDescription: "\u56DE\u590D10%\u7684\u6700\u5927\u751F\u547D\u503C"
+  healPervent: 0.1

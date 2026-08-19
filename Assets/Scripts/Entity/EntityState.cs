@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// 实体状态的抽象基类。
 /// 
-/// 与 EntityState 设计中几个关键选择的原因：
-/// 1. EntityState 不持有 Entity 引用而由子类持有（如 PlayerState、EnemyState），
+/// EntityState 设计中几个关键选择的原因：
+/// 1. 不持有 Entity 引用而由子类持有（如 PlayerState、EnemyState），
 ///    因为 Player 和 Enemy 有不同的组件和方法签名，统一定义到基类反而耦合。
 /// 2. animBoolName 用 string 而非 enum：灵活，子类/子状态可以复用同一个动画参数。
 /// 3. UpdateAnimationParameters 抽出为虚方法：让 PlayerState 和 EnemyState 各自同步不同的参数集。
@@ -16,7 +16,8 @@ public abstract class EntityState
     protected string animBoolName;          // 对应 Animator Controller 中的 bool 参数名
     protected Animator animator;
     protected Rigidbody2D rb;
-    protected float stateTimer;             // 通用倒计时计时器，子类按需使用
+    protected Entity_Stats stats;
+    protected float stateTimer;             // 通用倒计时定时器，子类按需使用
     protected bool triggerCalled;           // 由 Animation Event 设置为 true，状态逻辑读取后决定下一步
 
     public EntityState(StateMachine stateMachine, string animBoolName)
@@ -36,7 +37,7 @@ public abstract class EntityState
 
     /// <summary>
     /// 每帧更新：倒计时、更新动画参数。
-    /// 动画参数同步放在这里而不是 Player.Update()：
+    /// 动画参数同步放在这里而不是在 Player.Update() 中：
     /// 不同实体（Player/Enemy）需要同步的参数不同，各自在派生类中实现。
     /// </summary>
     public virtual void Update()
@@ -70,6 +71,11 @@ public abstract class EntityState
     /// </summary>
     public virtual void UpdateAnimationParameters()
     {
-        // 由子类覆写
+    }
+
+    public void SyncAttackSpeed()
+    {
+        float attackspeed = stats.offense.attackSpeed.GetValue();
+        animator.SetFloat("attackSpeedmultiplier", attackspeed);
     }
 }

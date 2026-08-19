@@ -24,10 +24,10 @@ public class Enemy_StunnedState : EnemyState
         enemy.EnableCounterWindow(false);
         enemy_VFX.EnableAttackAlert(false);
 
-        stateTimer = enemy.stunneduration;
+        stateTimer = enemy.stunDuration;
 
         // 向 facingDir 反方向飞，造成"被打飞"的视觉效果
-        rb.linearVelocity = new Vector2(enemy.stynnedVelocity.x * -enemy.facingDir, enemy.stynnedVelocity.y);
+        rb.linearVelocity = new Vector2(enemy.stunnedVelocity.x * -enemy.facingDir, enemy.stunnedVelocity.y);
     }
 
     public override void Update()

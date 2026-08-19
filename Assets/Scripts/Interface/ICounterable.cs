@@ -9,5 +9,6 @@ using UnityEngine;
 /// </summary>
 public interface ICounterable
 {
+    public bool CanBeCountered { get; }//与可反击窗口一致
     public void HandleCounter();
 }

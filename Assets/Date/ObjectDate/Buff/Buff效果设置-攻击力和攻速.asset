@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da68a03094a4b374380374608ac21a51, type: 3}
+  m_Name: "Buff\u6548\u679C\u8BBE\u7F6E-\u653B\u51FB\u529B\u548C\u653B\u901F"
+  m_EditorClassIdentifier: Assembly-CSharp::ItemEffectSO_Buff
+  effectDescription: "\u63D0\u534740\u70B9\u653B\u51FB\u529B\u548C\u767E\u5206\u4E4B20\u7684\u653B\u51FB\u901F\u5EA6"
+  buffs:
+  - type: 7
+    value: 30
+  - type: 6
+    value: 0.2
+  duration: 10
+  source: fc0d4574-c679-4561-b93f-6b4b03cb890c

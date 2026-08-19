@@ -25,7 +25,7 @@ public class Enemy_MoveState : Enemy_GroundState
     {
         base.Update();
         // 持续朝 facingDir 方向移动
-        enemy.SetVelocity(enemy.moveSpeed * enemy.facingDir, rb.linearVelocity.y);
+        enemy.SetVelocity(enemy.GetMoveSpeed() * enemy.facingDir, rb.linearVelocity.y);
 
         // 前方没地面（悬崖）或撞墙 → 回到待机，下次 MoveState 会转向
         if (!enemy.groundDetected || enemy.wallDetected)

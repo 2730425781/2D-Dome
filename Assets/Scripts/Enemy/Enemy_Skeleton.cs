@@ -7,11 +7,13 @@ using UnityEngine;
 /// 不是所有敌人都应该可以被反击（例如 Boss 可能免疫），
 /// 让具体的敌人类型自己决定是否实现 ICounterable 更灵活。
 /// 
-/// HandleCounter 中的 canBeCounned 检查：只有在反击窗口开启时才触发眩晕，
+/// HandleCounter 中的 CanCountered 检查：只有在反击窗口开启时才触发眩晕，
 /// 避免玩家随便在任何时候按反击都能打断敌人攻击。
 /// </summary>
 public class Enemy_Skeleton : Enemy, ICounterable
 {
+    public bool CanBeCountered { get => canBeCountered; }
+
     protected override void Awake()
     {
         base.Awake();
@@ -30,25 +32,15 @@ public class Enemy_Skeleton : Enemy, ICounterable
     }
 
     /// <summary>
-    /// 实现 ICounterable.HandleCounter。只有当 canBeCounned = true 时才有效。
+    /// 实现 ICounterable.HandleCounter。只有当 CanCountered = true 时才有效。
     /// 切到眩晕状态后敌人会被击飞并无法行动一段时间。
     /// </summary>
     public void HandleCounter()
     {
-        if (!canBeCounned)
+        if (!CanBeCountered)
         {
             return;
         }
         stateMachine.ChangeState(stunnedState);
-    }
-
-    protected override void Update()
-    {
-        base.Update();
-        // F 键调试用：直接触发反击（方便测试反击逻辑）
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            HandleCounter();
-        }
     }
 }

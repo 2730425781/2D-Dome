@@ -136,6 +136,60 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleSkillTreeUI"",
+                    ""type"": ""Button"",
+                    ""id"": ""af3efc42-1e86-4664-8ce5-19b76161f22e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Spell"",
+                    ""type"": ""Button"",
+                    ""id"": ""cbe55e60-8a0e-4595-83e8-08e01d959ade"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RangeAttack"",
+                    ""type"": ""Button"",
+                    ""id"": ""f25ba6d8-616a-4522-8718-54b1e45b87ec"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Mouse"",
+                    ""type"": ""Value"",
+                    ""id"": ""3a6be786-f424-4f2c-a2e6-f20a06ab1be7"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Skill_R"",
+                    ""type"": ""Button"",
+                    ""id"": ""0ba81a54-f4c4-4d10-a015-63c72e1f355e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleInventoryUI"",
+                    ""type"": ""Button"",
+                    ""id"": ""ad9e563a-e831-43d5-9448-171ef8b779a9"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -237,6 +291,72 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
                     ""action"": ""CounterAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""076455c1-6597-49c5-80c6-459ea831a009"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard & Mouse"",
+                    ""action"": ""ToggleSkillTreeUI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""189cc996-6f69-41d1-93f8-f0065ce7831b"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard & Mouse"",
+                    ""action"": ""Spell"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b685ecb5-8b8d-4a05-97a1-f25fe4be23c1"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard & Mouse"",
+                    ""action"": ""RangeAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""63751adc-e226-45c1-9148-558a6e33edc2"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard & Mouse"",
+                    ""action"": ""Mouse"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6817f232-01da-4839-9932-52c6c3a232a6"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard & Mouse"",
+                    ""action"": ""Skill_R"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""264f5b3b-d09d-42f5-9195-3b801499ded7"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard & Mouse"",
+                    ""action"": ""ToggleInventoryUI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -267,6 +387,12 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
         m_Player_CounterAttack = m_Player.FindAction("CounterAttack", throwIfNotFound: true);
+        m_Player_ToggleSkillTreeUI = m_Player.FindAction("ToggleSkillTreeUI", throwIfNotFound: true);
+        m_Player_Spell = m_Player.FindAction("Spell", throwIfNotFound: true);
+        m_Player_RangeAttack = m_Player.FindAction("RangeAttack", throwIfNotFound: true);
+        m_Player_Mouse = m_Player.FindAction("Mouse", throwIfNotFound: true);
+        m_Player_Skill_R = m_Player.FindAction("Skill_R", throwIfNotFound: true);
+        m_Player_ToggleInventoryUI = m_Player.FindAction("ToggleInventoryUI", throwIfNotFound: true);
     }
 
     ~@PlayerInputSet()
@@ -352,6 +478,12 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_Attack;
     private readonly InputAction m_Player_CounterAttack;
+    private readonly InputAction m_Player_ToggleSkillTreeUI;
+    private readonly InputAction m_Player_Spell;
+    private readonly InputAction m_Player_RangeAttack;
+    private readonly InputAction m_Player_Mouse;
+    private readonly InputAction m_Player_Skill_R;
+    private readonly InputAction m_Player_ToggleInventoryUI;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -383,6 +515,30 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/CounterAttack".
         /// </summary>
         public InputAction @CounterAttack => m_Wrapper.m_Player_CounterAttack;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ToggleSkillTreeUI".
+        /// </summary>
+        public InputAction @ToggleSkillTreeUI => m_Wrapper.m_Player_ToggleSkillTreeUI;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Spell".
+        /// </summary>
+        public InputAction @Spell => m_Wrapper.m_Player_Spell;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/RangeAttack".
+        /// </summary>
+        public InputAction @RangeAttack => m_Wrapper.m_Player_RangeAttack;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Mouse".
+        /// </summary>
+        public InputAction @Mouse => m_Wrapper.m_Player_Mouse;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Skill_R".
+        /// </summary>
+        public InputAction @Skill_R => m_Wrapper.m_Player_Skill_R;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ToggleInventoryUI".
+        /// </summary>
+        public InputAction @ToggleInventoryUI => m_Wrapper.m_Player_ToggleInventoryUI;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -424,6 +580,24 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
             @CounterAttack.started += instance.OnCounterAttack;
             @CounterAttack.performed += instance.OnCounterAttack;
             @CounterAttack.canceled += instance.OnCounterAttack;
+            @ToggleSkillTreeUI.started += instance.OnToggleSkillTreeUI;
+            @ToggleSkillTreeUI.performed += instance.OnToggleSkillTreeUI;
+            @ToggleSkillTreeUI.canceled += instance.OnToggleSkillTreeUI;
+            @Spell.started += instance.OnSpell;
+            @Spell.performed += instance.OnSpell;
+            @Spell.canceled += instance.OnSpell;
+            @RangeAttack.started += instance.OnRangeAttack;
+            @RangeAttack.performed += instance.OnRangeAttack;
+            @RangeAttack.canceled += instance.OnRangeAttack;
+            @Mouse.started += instance.OnMouse;
+            @Mouse.performed += instance.OnMouse;
+            @Mouse.canceled += instance.OnMouse;
+            @Skill_R.started += instance.OnSkill_R;
+            @Skill_R.performed += instance.OnSkill_R;
+            @Skill_R.canceled += instance.OnSkill_R;
+            @ToggleInventoryUI.started += instance.OnToggleInventoryUI;
+            @ToggleInventoryUI.performed += instance.OnToggleInventoryUI;
+            @ToggleInventoryUI.canceled += instance.OnToggleInventoryUI;
         }
 
         /// <summary>
@@ -450,6 +624,24 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
             @CounterAttack.started -= instance.OnCounterAttack;
             @CounterAttack.performed -= instance.OnCounterAttack;
             @CounterAttack.canceled -= instance.OnCounterAttack;
+            @ToggleSkillTreeUI.started -= instance.OnToggleSkillTreeUI;
+            @ToggleSkillTreeUI.performed -= instance.OnToggleSkillTreeUI;
+            @ToggleSkillTreeUI.canceled -= instance.OnToggleSkillTreeUI;
+            @Spell.started -= instance.OnSpell;
+            @Spell.performed -= instance.OnSpell;
+            @Spell.canceled -= instance.OnSpell;
+            @RangeAttack.started -= instance.OnRangeAttack;
+            @RangeAttack.performed -= instance.OnRangeAttack;
+            @RangeAttack.canceled -= instance.OnRangeAttack;
+            @Mouse.started -= instance.OnMouse;
+            @Mouse.performed -= instance.OnMouse;
+            @Mouse.canceled -= instance.OnMouse;
+            @Skill_R.started -= instance.OnSkill_R;
+            @Skill_R.performed -= instance.OnSkill_R;
+            @Skill_R.canceled -= instance.OnSkill_R;
+            @ToggleInventoryUI.started -= instance.OnToggleInventoryUI;
+            @ToggleInventoryUI.performed -= instance.OnToggleInventoryUI;
+            @ToggleInventoryUI.canceled -= instance.OnToggleInventoryUI;
         }
 
         /// <summary>
@@ -538,5 +730,47 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCounterAttack(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleSkillTreeUI" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleSkillTreeUI(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Spell" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSpell(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RangeAttack" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRangeAttack(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Mouse" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMouse(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Skill_R" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSkill_R(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleInventoryUI" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleInventoryUI(InputAction.CallbackContext context);
     }
 }

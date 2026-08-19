@@ -1,12 +1,15 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
+    public event Action OnFlipped;
     // ---------- 核心组件 ----------
     protected StateMachine stateMachine;
     public Animator animator { get; private set; }
     public Rigidbody2D rb { get; private set; }
+    public Entity_Stats stats { get; private set; }
 
     // ---------- 朝向 ----------
     // 用 facingDir 代替 bool + 方向的组合判断，facingDir 直接用于射线方向和速度方向
@@ -21,7 +24,7 @@ public class Entity : MonoBehaviour
     [SerializeField] private Transform groundCheck;      // 地面检测点（通常在角色脚底）
     [SerializeField] private Transform primaryWallCheck; // 墙体检测点（上），防止头顶悬空误判
     [SerializeField] private Transform secondaryWallCheck; // 墙体检测点（下），可空
-    [SerializeField] protected LayerMask groundLayer;    // 地面/墙体所在的 Layer
+    public LayerMask groundLayer;    // 地面/墙体所在的 Layer
     public bool groundDetected { get; private set; }
     public bool wallDetected { get; private set; }
 
@@ -29,11 +32,14 @@ public class Entity : MonoBehaviour
     // 击退期间禁止 SetVelocity 覆盖速度，确保击退动画不被玩家输入打断
     private bool isKnocked;
     private Coroutine knockBackCo;
+    private Coroutine slowDownCo;
 
     protected virtual void Awake()
     {
         animator = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        stats = GetComponent<Entity_Stats>();
+
         stateMachine = new StateMachine();
     }
 
@@ -62,11 +68,32 @@ public class Entity : MonoBehaviour
         // 由子类覆写，例如 Player 切到死亡状态，Enemy 也有自己的死亡流程
     }
 
-    /// <summary>
+    public virtual void SlowDownEntity(float duration, float slowMultiplier, bool canOverrideSlowEffect = false)
+    {
+        if (slowDownCo != null)
+        {
+            if (canOverrideSlowEffect)
+                StopCoroutine(slowDownCo);
+            else
+                return;
+        }
+        slowDownCo = StartCoroutine(SlowDownEntityCo(duration, slowMultiplier));
+    }
+
+    protected virtual IEnumerator SlowDownEntityCo(float duration, float slowMultiplier)
+    {
+        yield return null;
+    }
+
+    public virtual void StopSlowDown()
+    {
+        slowDownCo = null;
+    }
+
     /// 接收击退。用协程打断正在进行的击退，保证新击退总是覆盖旧击退。
     /// 击退期间 isKnocked = true，SetVelocity 会被跳过，防止玩家在击退中还能操控移动。
     /// </summary>
-    public void ReciveKnockBack(Vector2 knockBack, float duration)
+    public void ReceiveKnockBack(Vector2 knockBack, float duration)
     {
         if (knockBackCo != null)
         {
@@ -124,6 +151,8 @@ public class Entity : MonoBehaviour
         transform.Rotate(0.0f, 180.0f, 0.0f);
         facingRight = !facingRight;
         facingDir = facingDir * -1;
+
+        OnFlipped?.Invoke();
     }
 
     /// <summary>

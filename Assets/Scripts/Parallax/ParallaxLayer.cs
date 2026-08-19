@@ -8,7 +8,7 @@ using UnityEngine;
 public class ParallaxLayer
 {
     [SerializeField] private Transform background;          // 背景图片的 Transform
-    [SerializeField] private float parallaxMultipier;       // 视差倍率（0=静止, 1=随摄像机同步移动）
+    [SerializeField] private float parallaxMultiplier;       // 视差倍率（0=静止, 1=随摄像机同步移动）
     [SerializeField] private float imageWidthOffset = 10;   // 循环检测的容差偏移量
 
     private float imageFullWidth;   // 图片完整宽度
@@ -28,7 +28,7 @@ public class ParallaxLayer
     /// </summary>
     public void Move(float distanceToMove)
     {
-        background.position += Vector3.right * (distanceToMove * parallaxMultipier);
+        background.position += Vector3.right * (distanceToMove * parallaxMultiplier);
     }
 
     /// <summary>

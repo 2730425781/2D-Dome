@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class Enemy : Entity
 {
+    public Entity_Health health { get; private set; }
     // ---------- 状态实例 ----------
     public Enemy_IdleState idleState;
     public Enemy_MoveState moveState;
@@ -13,33 +15,61 @@ public class Enemy : Entity
 
     [Header("战斗设置")]
     public float battleMoveSpeed = 2.8f;      // 战斗时追踪玩家的移动速度（比巡逻快）
-    public float attackDistance = 2;           // 攻击距离阈值
-    public float battleTimeDuration = 5;       // 脱离战斗后多久切回巡逻
-    public float minRetreatDistance = 1;        // 距离玩家过近时后撤的最小距离
-    public Vector2 retreatValocity;             // 后撤速度
+    public float attackDistance = 2f;           // 攻击距离阈值
+    public float battleTimeDuration = 5f;       // 脱离战斗后多久切回巡逻
+    public float minRetreatDistance = 1f;        // 距离玩家过近时后撤的最小距离
+    public Vector2 retreatVelocity = new Vector2(5, 0);  // 后撤速度（x为水平后退速率，y为垂直，未配置时默认向左/右急退）
+    public float retreatDuration = 0.3f;       // 后退最大时长，防玩家跟随导致无限后退
 
     [Header("反击设置")]
-    public float stunneduration = 1;           // 被反击后的眩晕时长
-    public Vector2 stynnedVelocity = new Vector2(7, 7); // 被反击击飞速度
-    protected bool canBeCounned;               // 当前是否处于可被反击的窗口
+    public float stunDuration = 1f;           // 被反击后的眩晕时长
+    public Vector2 stunnedVelocity = new Vector2(7, 7); // 被反击击飞速度
+    protected bool canBeCountered;               // 当前是否处于可被反击的窗口
 
     [Header("移动设置")]
-    public float idleTime = 2;                 // 待机持续时间
+    public float idleTime = 2f;                 // 待机持续时间
     public float moveSpeed = 1.4f;             // 巡逻速度
     [Range(0, 2)]
-    public float moveAnimSpeedMultiplier = 1;   // 移动动画播放速度倍率
+    public float moveAnimSpeedMultiplier = 1f;   // 移动动画播放速度倍率
 
     [Header("玩家检测")]
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private Transform playerCheck;          // 玩家检测点
-    [SerializeField] private float playerCheckDistance = 10;  // 玩家检测距离
+    [SerializeField] private float playerCheckDistance = 10f;  // 玩家检测距离
+    [SerializeField] private float battleDetectRadius;
     public Transform player { get; private set; }            // 当前追踪的玩家
+    public float activeSlowMultiplier { get; private set; } = 1;
+
+    public float GetMoveSpeed() => moveSpeed * activeSlowMultiplier;
+    public float GetBattleSpeed() => battleMoveSpeed * activeSlowMultiplier;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        health = GetComponent<Enemy_Health>();
+    }
+
+    protected override IEnumerator SlowDownEntityCo(float duration, float slowMultiplier)
+    {
+        activeSlowMultiplier = 1 - slowMultiplier;
+        animator.speed = animator.speed * activeSlowMultiplier;
+
+        yield return new WaitForSeconds(duration);
+        StopSlowDown();
+    }
+
+    public override void StopSlowDown()
+    {
+        activeSlowMultiplier = 1;
+        animator.speed = 1;
+        base.StopSlowDown();
+    }
 
     /// <summary>
     /// 开启/关闭反击窗口。由 Enemy_AnimationTriggers 在动画事件中调用。
     /// 攻击动画的特定帧开启窗口，其他帧关闭。
     /// </summary>
-    public void EnableCounterWindow(bool enable) => canBeCounned = enable;
+    public void EnableCounterWindow(bool enable) => canBeCountered = enable;
 
     public override void EntityDeath()
     {
@@ -49,7 +79,7 @@ public class Enemy : Entity
 
     /// <summary>
     /// 当玩家死亡时触发的回调：敌人停止战斗行为，回到待机巡逻。
-    /// 通过 Player.OnPlayerADeath 事件订阅，不由状态机直接管理。
+    /// 通过 Player.OnPlayerDeath 事件订阅，不由状态机直接管理。
     /// </summary>
     private void HandlePlayerDeath()
     {
@@ -103,6 +133,10 @@ public class Enemy : Entity
     protected override void OnDrawGizmos()
     {
         base.OnDrawGizmos();
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, battleDetectRadius);
+
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(playerCheck.position, new Vector3(playerCheck.position.x + facingDir * playerCheckDistance, playerCheck.position.y));
     }
@@ -110,11 +144,23 @@ public class Enemy : Entity
     // 订阅玩家死亡事件，避免敌人对着尸体继续战斗
     private void OnEnable()
     {
-        Player.OnPlayerADeath += HandlePlayerDeath;
+        Player.OnPlayerDeath += HandlePlayerDeath;
     }
 
     private void OnDisable()
     {
-        Player.OnPlayerADeath -= HandlePlayerDeath;
+        Player.OnPlayerDeath -= HandlePlayerDeath;
+    }
+
+    /// <summary>
+    /// 在敌人周围圆形范围内查找玩家。
+    /// 返回 null 表示范围内没有玩家。
+    /// </summary>
+    public Transform FindPlayerInRadius()
+    {
+        if (playerLayer == 0) return null;
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, battleDetectRadius, playerLayer);
+        return hits.Length > 0 ? hits[0].transform : null;
     }
 }

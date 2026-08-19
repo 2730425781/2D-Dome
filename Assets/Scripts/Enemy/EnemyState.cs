@@ -13,6 +13,7 @@ public class EnemyState : EntityState
         this.enemy = enemy;
         rb = enemy.rb;
         animator = enemy.animator;
+        stats = enemy.stats;
     }
     public override void UpdateAnimationParameters()
     {

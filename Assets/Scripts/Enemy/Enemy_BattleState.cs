@@ -12,6 +12,7 @@ using UnityEngine;
 public class Enemy_BattleState : EnemyState
 {
     private Transform player;
+    private Transform lastTarget;
     private float lastTimeInBattle;  // 上次见到玩家的时间戳
 
     public Enemy_BattleState(Enemy enemy, StateMachine stateMachine, string animBoolName) : base(enemy, stateMachine, animBoolName)
@@ -25,12 +26,25 @@ public class Enemy_BattleState : EnemyState
         if (player == null)
         {
             player = enemy.GetPlayerTransform();
+
+            // 射线检测不到玩家（例如玩家在视线盲区）时，
+            // 退回 Enemy_Health 的圆形范围检测，避免 player 为 null 导致敌人原地卡住
+            if (player == null)
+            {
+                Enemy_Health health = enemy.GetComponent<Enemy_Health>();
+                if (health != null)
+                {
+                    player = enemy.FindPlayerInRadius();
+                }
+            }
         }
 
         // 进入战斗时如果距离玩家太近，先向后跳开一段距离
         if (ShouldRetreat())
         {
-            rb.linearVelocity = new Vector2(enemy.retreatValocity.x * -DirectionToPlayer(), enemy.retreatValocity.y);
+            rb.linearVelocity =
+                new Vector2(enemy.retreatVelocity.x * enemy.activeSlowMultiplier * -DirectionToPlayer(), enemy.retreatVelocity.y);
+
             enemy.HandleFlip(DirectionToPlayer());
         }
     }
@@ -42,6 +56,7 @@ public class Enemy_BattleState : EnemyState
         // 当前帧如果看到了玩家，刷新战斗计时器
         if (enemy.PlayerDetection())
         {
+            UpdateTarget();
             UpdateBattleTimer();
         }
 
@@ -59,7 +74,20 @@ public class Enemy_BattleState : EnemyState
         else
         {
             // 还没到攻击范围 → 朝玩家方向移动
-            enemy.SetVelocity(enemy.battleMoveSpeed * DirectionToPlayer(), rb.linearVelocity.y);
+            enemy.SetVelocity(enemy.GetBattleSpeed() * DirectionToPlayer(), rb.linearVelocity.y);
+        }
+    }
+
+    private void UpdateTarget()
+    {
+        if (!enemy.PlayerDetection()) return;
+
+        Transform newTarget = enemy.PlayerDetection().transform;
+
+        if (newTarget != lastTarget)
+        {
+            lastTarget = newTarget;
+            player = newTarget;
         }
     }
 
