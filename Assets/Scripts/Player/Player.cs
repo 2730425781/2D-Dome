@@ -18,7 +18,7 @@ using UnityEngine;
 [RequireComponent(typeof(Player_Combat))]
 public class Player : Entity
 {
-    private UI uI;
+    public UI ui { get; private set; }
     // 玩家死亡时通知所有订阅者（比如敌人停止战斗行为）
     public static event Action OnPlayerDeath;
     public PlayerInputSet input { get; private set; }
@@ -78,7 +78,7 @@ public class Player : Entity
 
         input = new PlayerInputSet();
 
-        uI = FindAnyObjectByType<UI>();
+        ui = FindAnyObjectByType<UI>();
         vfx = GetComponent<Player_VFX>();
         health = GetComponent<Entity_Health>();
         combat = GetComponent<Player_Combat>();
@@ -173,8 +173,10 @@ public class Player : Entity
         input.Player.Spell.performed += ctx => skillManager.shard.TryUseSkill();
         input.Player.Spell.performed += ctx => skillManager.timeEcho.TryUseSkill();
 
-        input.Player.ToggleSkillTreeUI.performed += ctx => uI.ToggleSkillTreeUI();
-        input.Player.ToggleInventoryUI.performed += ctx => uI.ToggleInvemtoryUI();
+        input.Player.Interact.performed += ctx => TryInteract();
+
+        input.Player.ToggleSkillTreeUI.performed += ctx => ui.ToggleSkillTreeUI();
+        input.Player.ToggleInventoryUI.performed += ctx => ui.ToggleInvemtoryUI();
     }
 
     private void OnDisable()
@@ -189,6 +191,30 @@ public class Player : Entity
         {
             moveInput = Vector2.zero;
         };
+    }
+
+    private void TryInteract()
+    {
+        Transform closest = null;
+        float closestDistance = Mathf.Infinity;
+        Collider2D[] objectsAround = Physics2D.OverlapCircleAll(transform.position, 1.5f);
+
+        foreach (var target in objectsAround)
+        {
+            IInteractable interactable = target.GetComponent<IInteractable>();
+            if (interactable == null) continue;
+
+            float distance = Vector2.Distance(transform.position, target.transform.position);
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closest = target.transform;
+            }
+        }
+        if (closest == null) return;
+
+        closest.GetComponent<IInteractable>().Interact();
     }
 
     // ---------- 延迟进入攻击状态（协程辅助） ----------

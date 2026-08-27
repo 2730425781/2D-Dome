@@ -37,11 +37,21 @@ public class Skill_Base : MonoBehaviour
     /// <summary>
     /// 技能树解锁时调用，把升级数据应用到技能上。
     /// </summary>
-    public void SetSkillUpgrade(UpgradeDate upgrade)
+    public void SetSkillUpgrade(SkillDataSO skillData)
     {
+        UpgradeDate upgrade = skillData.upgradeDate;
         upgradeType = upgrade.upgradeType;
         cooldown = upgrade.cooldown;
         damageScaleDate = upgrade.damageScaleDate;
+
+        // HUD 技能槽可能不存在（如技能栏还在重构、某技能没配槽位）：
+        // 槽位只是展示入口，缺失时跳过而不影响技能升级本身生效
+        UI_SkillSlot hudSlot = player.ui.inGameUI.GetSkillSlot(skillType);
+        if (hudSlot != null)
+        {
+            hudSlot.SetupSkillSlots(skillData);
+        }
+
         ResetCoolDown();
     }
 
@@ -55,7 +65,6 @@ public class Skill_Base : MonoBehaviour
 
         if (OnCoolDown())
         {
-            Debug.Log("技能冷却中");
             return false;
         }
         else

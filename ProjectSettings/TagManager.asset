@@ -21,8 +21,8 @@ TagManager:
   - Chest
   - Buff
   - SkillObject_Sword
-  - 
-  - 
+  - ItemPickup
+  - PlayerInteractable
   - 
   - 
   - 

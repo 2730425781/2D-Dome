@@ -17,6 +17,13 @@ MonoBehaviour:
   itemType: 2
   maxStackSize: 1
   itemEffect: {fileID: 11400000, guid: 6adc5b184b9aafa49a7589da46e6c94a, type: 2}
+  craftRecipe: []
+  itemRarity: 860
+  dropChance: 14.1
+  maxDropChance: 50
+  itemPrice: 10000
+  minStackSizeInShop: 1
+  maxStackSizeInShop: 1
   modifiers:
   - statType: 0
     value: 100

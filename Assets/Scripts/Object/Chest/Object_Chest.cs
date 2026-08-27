@@ -15,12 +15,21 @@ public class Object_Chest : MonoBehaviour, IDamagable
     private Rigidbody2D rb => GetComponentInChildren<Rigidbody2D>();
     private Animator animator => GetComponentInChildren<Animator>();
     private Entity_VFX vfx => GetComponent<Entity_VFX>();
+    private Entity_DropManager dropManager => GetComponent<Entity_DropManager>();
 
     [Header("开启效果")]
     [SerializeField] private Vector2 knockBack;
+    [SerializeField] private bool canDropItem = true;
 
     public bool TakeDamage(float damage, float elementalDamage, ElementType element, Transform damageDealer)
     {
+        if (!canDropItem)
+        {
+            return false;
+        }
+
+        dropManager?.DropItems();
+        canDropItem = false;
         vfx.PlayOnDamageVFX();            // 受击闪白
         animator.SetBool("openChest", true); // 触发开启动画
         rb.linearVelocity = knockBack;      // 被击退（视觉反馈）

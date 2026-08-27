@@ -11,11 +11,13 @@ using UnityEngine.UI;
 public class Entity_Health : MonoBehaviour, IDamagable
 {
     public event Action OnTakingDamage;
+    public event Action OnHealthUpdate;
 
     private Slider healthBar;
     private Entity entity;
     private Entity_VFX entityVFX;
     private Entity_Stats entityStats;
+    private Entity_DropManager dropManager;
 
     [Header("生命设置")]
     [SerializeField] protected float currentHealth;
@@ -38,10 +40,12 @@ public class Entity_Health : MonoBehaviour, IDamagable
 
     protected virtual void Awake()
     {
-        entityVFX = GetComponent<Entity_VFX>();
         entity = GetComponent<Entity>();
-        healthBar = GetComponentInChildren<Slider>();
+        entityVFX = GetComponent<Entity_VFX>();
         entityStats = GetComponent<Entity_Stats>();
+        healthBar = GetComponentInChildren<Slider>();
+        dropManager = GetComponent<Entity_DropManager>();
+
         SetupHealth();
     }
 
@@ -50,6 +54,8 @@ public class Entity_Health : MonoBehaviour, IDamagable
         if (entityStats != null)
         {
             currentHealth = entityStats.GetMaxHealth();
+            OnHealthUpdate += UpdateHealthBar;
+
             UpdateHealthBar();
             InvokeRepeating(nameof(RegenerateHealth), 0, regenInterval);
         }
@@ -128,14 +134,16 @@ public class Entity_Health : MonoBehaviour, IDamagable
         float newHealth = currentHealth + healAmount;
         float maxHealth = entityStats.GetMaxHealth();
         currentHealth = Mathf.Min(newHealth, maxHealth);
-        UpdateHealthBar();
+
+        OnHealthUpdate?.Invoke();
     }
 
     public void ReduceHealth(float damage)
     {
         currentHealth -= damage;
         entityVFX?.PlayOnDamageVFX();
-        UpdateHealthBar();
+        OnHealthUpdate?.Invoke();
+
         if (currentHealth <= 0)
         {
             Die();
@@ -147,7 +155,8 @@ public class Entity_Health : MonoBehaviour, IDamagable
         isDead = true;
         // 通知 Entity 做死亡逻辑（状态切换等），而不是在这里直接操作状态机
         // 这样 Entity 的派生类（Player/Enemy）可以各自定制死亡行为
-        entity.EntityDeath();
+        entity?.EntityDeath();
+        dropManager.DropItems();
     }
 
     public float GetHealthPercentage() => currentHealth / entityStats.GetMaxHealth();
@@ -156,8 +165,11 @@ public class Entity_Health : MonoBehaviour, IDamagable
     {
         float maxHealth = entityStats.GetMaxHealth();
         currentHealth = Mathf.Clamp(percent * maxHealth, 0, maxHealth);
-        UpdateHealthBar();
+
+        OnHealthUpdate?.Invoke();
     }
+
+    public float GetCurrentHealth() => currentHealth;
 
     private void UpdateHealthBar()
     {
