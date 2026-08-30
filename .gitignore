@@ -1,4 +1,4 @@
-﻿# Unity
+# Unity
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
@@ -6,6 +6,8 @@
 [Bb]uilds/
 [Ll]ogs/
 [Uu]ser[Ss]ettings/
+# Unity 崩溃恢复场景，不应入库
+[_R]ecovery/
 *.user
 *.userprefs
 *.unityproj
