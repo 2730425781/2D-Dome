@@ -22,12 +22,10 @@ public class Object_Blacksmith : Object_NPC, IInteractable
 
     public void Interact()
     {
-        // 遗留的占位调试输出；后续应替换为真正的锻造/强化面板入口
         ui.storageUI.SetupStorageUI(storage);
         ui.craftUI.SetupCraftUI(storage);
 
-        //ui.storageUI.gameObject.SetActive(true);
-        ui.craftUI.gameObject.SetActive(true);
+        ui.OpenMerchantUI(true);
     }
 
     protected override void OnTriggerEnter2D(Collider2D collision)
@@ -44,9 +42,8 @@ public class Object_Blacksmith : Object_NPC, IInteractable
         // 在已销毁的 UI 上调用方法会抛异常，统一判空
         if (ui != null)
         {
-            ui.SwitchoffAllTooltips();
-            if (ui.storageUI != null) ui.storageUI.gameObject.SetActive(false);
-            if (ui.craftUI != null) ui.craftUI.gameObject.SetActive(false);
+            ui.HideAllTooltips();
+            ui.OpenStorageUI(false);
         }
     }
 }

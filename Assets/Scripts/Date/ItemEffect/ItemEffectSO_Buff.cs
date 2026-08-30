@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -14,21 +15,14 @@ public class ItemEffectSO_Buff : ItemEffectDateSO
     // 每个效果资源实例生成唯一 ID 作为 Buff 的“来源标识”。
     // 为什么用 GUID：不同物品（即使引用同一份效果资源）需要能各自生效，
     // 若用固定字符串，所有同类物品的 Buff 会互相顶替。
-    [SerializeField] private string source = Guid.NewGuid().ToString();
+    private string source = "Buff - " + Guid.NewGuid();
 
-    // 缓存玩家属性引用，避免每次使用都重新查找
-    Player_Stats playerStats;
 
-    public override bool CanBeUsed()
+    public override bool CanBeUsed(Player player)
     {
-        // 懒加载：第一次使用时才查找玩家，平时不消耗查找开销
-        if (playerStats == null)
+        if (player.stats.CanApplyBuff(source))
         {
-            playerStats = FindAnyObjectByType<Player_Stats>();
-        }
-
-        if (playerStats.CanApplyBuff(source))
-        {
+            this.player = player;
             return true;
         }
         else
@@ -42,6 +36,7 @@ public class ItemEffectSO_Buff : ItemEffectDateSO
     public override void ExecuteEffect()
     {
         // 用唯一 source 注册 Buff：到期后 Player_Stats 的协程会自动移除修正并刷新背包 UI
-        playerStats.ApplyBuff(buffs, duration, source);
+        player.stats.ApplyBuff(buffs, duration, source);
+        player = null;
     }
 }

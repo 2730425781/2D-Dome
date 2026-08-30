@@ -27,6 +27,8 @@ public class Player : Entity
     public Entity_Health health { get; private set; }
     public Entity_StatusHandler statusHandler { get; private set; }
     public Player_Combat combat { get; private set; }
+    public Inventory_Player playerInventory { get; private set; }
+    public Player_Stats stats { get; private set; }
 
     #region 玩家状态变量
 
@@ -76,14 +78,17 @@ public class Player : Entity
     {
         base.Awake();
 
-        input = new PlayerInputSet();
-
         ui = FindAnyObjectByType<UI>();
         vfx = GetComponent<Player_VFX>();
         health = GetComponent<Entity_Health>();
         combat = GetComponent<Player_Combat>();
         skillManager = GetComponent<Player_SkillManager>();
+        playerInventory = GetComponent<Inventory_Player>();
         statusHandler = GetComponent<Entity_StatusHandler>();
+        stats = GetComponent<Player_Stats>();
+
+        input = new PlayerInputSet();
+        ui.SetupControlsUI(input);
 
         // 初始化所有状态，animBoolName 必须与 Animator Controller 中的参数名一致
         idleState = new Player_IdleState(this, stateMachine, "idle");
@@ -175,8 +180,8 @@ public class Player : Entity
 
         input.Player.Interact.performed += ctx => TryInteract();
 
-        input.Player.ToggleSkillTreeUI.performed += ctx => ui.ToggleSkillTreeUI();
-        input.Player.ToggleInventoryUI.performed += ctx => ui.ToggleInvemtoryUI();
+        input.Player.QuickItemSlot_1.performed += ctx => playerInventory.TryUseQuickItemInSlot(1);
+        input.Player.QuickItemSlot_2.performed += ctx => playerInventory.TryUseQuickItemInSlot(2);
     }
 
     private void OnDisable()

@@ -82,7 +82,19 @@ public class Skill_Base : MonoBehaviour
 
     // lastTimeToUsed == 0 表示从未使用过，首次使用不算冷却
     protected bool OnCoolDown() => lastTimeToUsed == 0 ? false : Time.time <= lastTimeToUsed + cooldown;
-    public void SetSkillOnCoolDown() => lastTimeToUsed = Time.time;
+
+    public void SetSkillOnCoolDown()
+    {
+        player.ui.inGameUI.GetSkillSlot(skillType).StartCooldown(cooldown);
+        lastTimeToUsed = Time.time;
+    }
+
     public void ReduceCoolDownBy(float coolDownReduction) => lastTimeToUsed += coolDownReduction;
-    public void ResetCoolDown() => lastTimeToUsed = Time.time - cooldown;
+
+
+    public void ResetCoolDown()
+    {
+        player.ui.inGameUI.GetSkillSlot(skillType).ResetCooldown();
+        lastTimeToUsed = Time.time - cooldown;
+    }
 }

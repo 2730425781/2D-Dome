@@ -276,7 +276,7 @@ public class UI_TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         // 技能树面板未激活时不响应悬停：
         // ToolTip 属于面板层，面板关闭时节点仍在场景中但不应弹提示
         if (skillTree == null || !skillTree.gameObject.activeInHierarchy) return;
-        ui.skillToolTip.ShowToolTip(true, rect, this);
+        ui.skillToolTip.ShowToolTip(true, rect, skillData, this);
 
         // 只有"可解锁但还没点"的节点才做悬停高亮：
         // 已解锁/已锁定的颜色有明确语义，不能被悬停色覆盖

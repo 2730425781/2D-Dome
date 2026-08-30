@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,19 +8,74 @@ using UnityEngine;
 /// </summary>
 public class Inventory_Player : Inventory_Base
 {
+    public event Action<int, Inventory_Item> OnQuickSlotUsed;
+    // 按下快捷栏按键使用物品后触发（不区分"设置/使用"，仅在使用时发出），用于 UI 变暗反馈
+    public event Action<int> OnQuickItemUsed;
     public int gold = 10000;
-
-    private Player player;
     public List<Inventory_EquipmentSlot> equipList;
     public Inventoty_Storage storage { get; private set; }
+
+    [Header("快速物品栏")]
+    [SerializeField]
+    private Inventory_Item[] quickItems = new Inventory_Item[2];
 
     // 在 Awake 而非 Start 里取 Player：换装可能在任何帧被触发，必须保证进入游戏时引用就已就绪；
     // 先调 base.Awake() 保住基类的初始化契约
     protected override void Awake()
     {
         base.Awake();
-        player = GetComponent<Player>();
         storage = FindAnyObjectByType<Inventoty_Storage>();
+    }
+
+    public void SetQuickItemInSlot(int slotNumber, Inventory_Item item)
+    {
+        quickItems[slotNumber - 1] = item;
+        OnQuickSlotUsed?.Invoke(slotNumber - 1, item);
+    }
+
+    /// <summary>
+    /// 判断某物品"种类"是否已占用任意快捷栏位。
+    /// 按 itemDate（物品数据资产）而非实例判断：不允许同类型的两个堆叠
+    /// （如两格治疗药水）同时占用快捷栏——否则使用其中一个堆叠时，另一格的数量不会同步。
+    /// </summary>
+    public bool IsItemInQuickSlot(Inventory_Item item)
+    {
+        if (item == null || item.itemDate == null) return false;
+
+        foreach (var qi in quickItems)
+        {
+            if (qi != null && qi.itemDate == item.itemDate) return true;
+        }
+        return false;
+    }
+
+    public void TryUseQuickItemInSlot(int passedSlotNumber)
+    {
+        int slotNumber = passedSlotNumber - 1;
+
+        // 防止传入 0 或超出范围时数组越界
+        if (slotNumber < 0 || slotNumber >= quickItems.Length)
+        {
+            return;
+        }
+
+        var itemToUse = quickItems[slotNumber];
+        if (itemToUse == null)
+        {
+            Debug.Log("物品快捷栏没有物品");
+            return;
+        }
+
+        TryUseItem(itemToUse);
+
+        // 用完后重新从背包解析：可能已用完(→null)，或背包里还有同类型另一堆叠(→指向它)。
+        // 不能沿用旧引用——最后一个堆叠用掉后旧实例已从背包移除，残留引用会导致
+        // 之后再次按下时 Use 不生效甚至异常
+        quickItems[slotNumber] = FindSameItem(itemToUse);
+
+        OnQuickSlotUsed?.Invoke(slotNumber, quickItems[slotNumber]);
+        // 使用反馈：和点击一致——按快捷键使用时 UI 也会变暗一闪
+        OnQuickItemUsed?.Invoke(slotNumber);
     }
 
     public void TryEquipItem(Inventory_Item item)

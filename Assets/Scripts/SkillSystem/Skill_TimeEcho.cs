@@ -90,6 +90,7 @@ public class Skill_TimeEcho : Skill_Base
         }
 
         CreateTimeEcho();
+        SetSkillOnCoolDown();
     }
 
     /// <summary>

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -7,9 +8,14 @@ using UnityEngine;
 /// </summary>
 public class UI : MonoBehaviour
 {
+    [SerializeField] private GameObject[] uiElements;
+
+    public bool alternativeInput { get; private set; }
+    private PlayerInputSet input;
 
     public UI_Craft craftUI { get; private set; }
     public UI_InGame inGameUI { get; private set; }
+    public UI_Options optionsUI { get; private set; }
     public UI_Storage storageUI { get; private set; }
     public UI_Merchant merchantUI { get; private set; }
     public UI_Inventory inventoryUI { get; private set; }
@@ -31,6 +37,7 @@ public class UI : MonoBehaviour
         craftUI = GetComponentInChildren<UI_Craft>(true);
         inGameUI = GetComponentInChildren<UI_InGame>(true);
         storageUI = GetComponentInChildren<UI_Storage>(true);
+        optionsUI = GetComponentInChildren<UI_Options>(true);
         merchantUI = GetComponentInChildren<UI_Merchant>(true);
         skillTreeUI = GetComponentInChildren<UI_SkillTree>(true);
         inventoryUI = GetComponentInChildren<UI_Inventory>(true);
@@ -46,7 +53,72 @@ public class UI : MonoBehaviour
         skillTreeUI.UnlockDefaultSkills();
     }
 
-    public void SwitchoffAllTooltips()
+    public void SetupControlsUI(PlayerInputSet inputSet)
+    {
+        input = inputSet;
+        input.UI.SkillTreeUI.performed += ctx => ToggleSkillTreeUI();
+        input.UI.InventoryUI.performed += ctx => ToggleInvemtoryUI();
+
+        input.UI.AlternativeInput.performed += ctx => alternativeInput = true;
+        input.UI.AlternativeInput.canceled += ctx => alternativeInput = false;
+
+        input.UI.ToggleOptionsUI.performed += ctx =>
+        {
+            foreach (var element in uiElements)
+            {
+                if (element.activeSelf)
+                {
+                    Time.timeScale = 1;
+                    SwitchToGameUI();
+                    return;
+                }
+            }
+
+            Time.timeScale = 0;
+            OpenOptionsUI();
+        };
+    }
+
+    public void OpenOptionsUI()
+    {
+        foreach (var element in uiElements)
+        {
+            element.gameObject.SetActive(false);
+        }
+
+        HideAllTooltips();
+        StopPlayerControls(true);
+        optionsUI.gameObject.SetActive(true);
+    }
+
+    public void SwitchToGameUI()
+    {
+        foreach (var element in uiElements)
+        {
+            element.gameObject.SetActive(false);
+        }
+
+        HideAllTooltips();
+        StopPlayerControls(false);
+        inGameUI.gameObject.SetActive(true);
+
+        skillTreeEnable = false;
+        inventoryEnable = false;
+    }
+
+    private void StopPlayerControls(bool stopControls)
+    {
+        if (stopControls)
+        {
+            input.Player.Disable();
+        }
+        else
+        {
+            input.Player.Enable();
+        }
+    }
+
+    public void HideAllTooltips()
     {
         // 逐个判空：引用可能未绑定（组件缺失），也可能在播放模式切换中被销毁
         // （本项目关闭了域重载），在已销毁的 ToolTip 上调用方法会抛异常
@@ -61,7 +133,9 @@ public class UI : MonoBehaviour
     {
         skillTreeEnable = !skillTreeEnable;
         skillTreeUI.gameObject.SetActive(skillTreeEnable);
-        if (skillToolTip != null) skillToolTip.ShowToolTip(false, null);
+        HideAllTooltips();
+
+        StopPlayerControls(skillTreeEnable);
     }
 
     // 关闭背包时清掉物品/属性 ToolTip，理由同上：
@@ -70,7 +144,31 @@ public class UI : MonoBehaviour
     {
         inventoryEnable = !inventoryEnable;
         inventoryUI.gameObject.SetActive(inventoryEnable);
-        if (statToolTip != null) statToolTip.ShowToolTip(false, null);
-        if (itemToolTip != null) itemToolTip.ShowToolTip(false, null);
+        HideAllTooltips();
+
+        StopPlayerControls(inventoryEnable);
+    }
+
+    public void OpenStorageUI(bool openStrageUI)
+    {
+        storageUI.gameObject.SetActive(openStrageUI);
+        StopPlayerControls(openStrageUI);
+
+        if (!openStrageUI)
+        {
+            craftUI.gameObject.SetActive(false);
+            HideAllTooltips();
+        }
+    }
+
+    public void OpenMerchantUI(bool openMerchantUI)
+    {
+        merchantUI.gameObject.SetActive(openMerchantUI);
+        StopPlayerControls(openMerchantUI);
+
+        if (!openMerchantUI)
+        {
+            HideAllTooltips();
+        }
     }
 }

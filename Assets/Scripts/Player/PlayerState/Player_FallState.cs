@@ -14,6 +14,7 @@ public class Player_FallState : Player_AirState
     public override void Enter()
     {
         base.Enter();
+        animator.SetBool("inAir", true);
         // 可在此处添加进入下落时的逻辑（如重置双跳计数等）
     }
 
@@ -33,4 +34,11 @@ public class Player_FallState : Player_AirState
             stateMachine.ChangeState(player.wallSlideState);
         }
     }
+
+    public override void Exit()
+    {
+        base.Exit();
+        animator.SetBool("inAir", false);
+    }
+
 }

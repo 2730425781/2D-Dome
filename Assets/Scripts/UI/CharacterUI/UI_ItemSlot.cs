@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,14 +8,14 @@ using UnityEngine.UI;
 public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler,
     IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
-    public Inventory_Item itemInSlot { get; private set; }
+    public Inventory_Item itemInSlot { get; protected set; }
     protected Inventory_Player inventory;
     protected UI ui;
     protected RectTransform rect;
 
     [Header("物品槽位")]
-    [SerializeField] private Image itemIcon;
-    [SerializeField] private TextMeshProUGUI itemStackSize;
+    [SerializeField] protected Image itemIcon;
+    [SerializeField] protected TextMeshProUGUI itemStackSize;
 
     // 槽位默认底框：空槽时恢复它，而不是把图标清空
     // 用 OnValidate 在编辑器中缓存，避免运行时 Awake 顺序问题
@@ -28,6 +29,10 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     protected bool dragStarted;
     // 拖动时跟随鼠标的幽灵图标（拖拽期间临时创建，结束即销毁）
     private GameObject dragGhost;
+    // 点击/拖动时的"变暗"反馈：按下即变暗、抬起/落格后恢复，
+    // 提示用户该槽被操作了（也用于区分"最后一个堆叠用完"这类数量不变的场景）
+    private Color lastIconColor;
+    private bool iconDimmed;
 
     private void OnValidate()
     {
@@ -37,7 +42,7 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         defaultSlotColor = itemIcon.color;
     }
 
-    protected void Awake()
+    protected virtual void Awake()
     {
         ui = GetComponentInParent<UI>();
         rect = GetComponent<RectTransform>();
@@ -66,10 +71,13 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         // 只记录"按下"，点击行为延后到 OnPointerUp：
         // 若按下后发生了拖拽，说明用户意图是拖动而不是点击
         dragStarted = false;
+        DimIcon();
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        // 先恢复变暗，再执行点击行为（行为可能刷新槽位，需在恢复之后）
+        RestoreIcon();
         if (!dragStarted) ExecuteClickAction(eventData);
     }
 
@@ -83,10 +91,6 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
         if (itemInSlot.itemDate.itemType == ItemType.Consumable)
         {
-            if (!itemInSlot.itemEffect.CanBeUsed())
-            {
-                return;
-            }
             inventory.TryUseItem(itemInSlot);
         }
         else
@@ -109,6 +113,9 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         // 拖拽开始先藏掉 ToolTip，避免拖拽过程中悬停残留
         if (ui != null) ui.itemToolTip.ShowToolTip(false, null);
 
+        // 拖动期间源槽图标保持变暗
+        DimIcon();
+
         CreateDragGhost(eventData);
     }
 
@@ -120,6 +127,7 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public void OnEndDrag(PointerEventData eventData)
     {
         DestroyDragGhost();
+        RestoreIcon();
     }
 
     /// <summary>拖放目标收到事件：pointerDrag 即拖拽源物体，取其槽位组件作为来源。</summary>
@@ -213,6 +221,68 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         }
     }
 
+    // 把当前物品图标调暗（RGB * 0.65），用于点击/拖动的操作反馈
+    // 幂等的"变暗"核心：只在第一次变暗时记录真实基线，之后重复调用不改变基线。
+    // 否则拖动时 OnPointerDown + OnBeginDrag 会连续变暗两次，把已变暗的颜色当成新基线，
+    // 导致 RestoreIcon 恢复的是漂移后的值——物品复归原位后变暗，且每次拖动更暗一层
+    private void SetDimmed()
+    {
+        if (itemIcon == null) return;
+
+        if (!iconDimmed)
+        {
+            lastIconColor = itemIcon.color;
+            iconDimmed = true;
+        }
+
+        Color dimmed = new Color(lastIconColor.r * 0.65f, lastIconColor.g * 0.65f, lastIconColor.b * 0.65f, lastIconColor.a);
+        itemIcon.color = dimmed;
+    }
+
+    private void DimIcon()
+    {
+        if (itemInSlot == null) return;   // 空槽点击不变暗
+        SetDimmed();
+    }
+
+    private void RestoreIcon()
+    {
+        if (itemIcon == null || !iconDimmed) return;
+
+        itemIcon.color = lastIconColor;
+        iconDimmed = false;
+    }
+
+    /// <summary>
+    /// 供非鼠标路径（如按键使用快捷栏物品）触发的"使用变暗一闪"反馈，
+    /// 与鼠标点击的按压变暗效果一致。
+    /// 注意：不能依赖 itemInSlot——用完最后一个堆叠时槽位已被清空（itemInSlot=null），
+    /// 但此时仍要对当前显示的图标做一次变暗，提示"这次使用生效了"。
+    /// 同样走幂等 SetDimmed，不与拖动/点击的基线互相污染。
+    /// </summary>
+    public void FlashUseFeedback()
+    {
+        if (itemIcon == null) return;
+
+        // 先停旧协程再开新的，快速连按不会叠加多个变暗循环
+        if (useFeedbackCo != null)
+        {
+            StopCoroutine(useFeedbackCo);
+        }
+
+        SetDimmed();
+
+        useFeedbackCo = StartCoroutine(UseFeedbackCo());
+    }
+
+    private Coroutine useFeedbackCo;
+
+    private IEnumerator UseFeedbackCo()
+    {
+        yield return new WaitForSeconds(0.15f);
+        RestoreIcon();
+    }
+
     // ---------- 展示 ----------
 
     public void UpdateSlot(Inventory_Item item)
@@ -242,7 +312,7 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         ui.itemToolTip.ShowToolTip(true, rect, itemInSlot);
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    public virtual void OnPointerExit(PointerEventData eventData)
     {
         ui.itemToolTip.ShowToolTip(false, null);
     }

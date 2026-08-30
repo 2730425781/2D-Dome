@@ -14,6 +14,7 @@ public class Player_JumpState : Player_AirState
     {
         base.Enter();
         player.SetVelocity(rb.linearVelocity.x, player.jumpForce);
+        animator.SetBool("inAir", true);
     }
 
     public override void Update()
@@ -33,4 +34,11 @@ public class Player_JumpState : Player_AirState
             stateMachine.ChangeState(player.wallSlideState);
         }
     }
+
+    public override void Exit()
+    {
+        base.Exit();
+        animator.SetBool("inAir", false);
+    }
+
 }

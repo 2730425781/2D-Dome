@@ -5,6 +5,7 @@ using UnityEngine;
 public class Enemy : Entity
 {
     public Entity_Health health { get; private set; }
+    public Entity_Stats stats { get; private set; }
     // ---------- 状态实例 ----------
     public Enemy_IdleState idleState;
     public Enemy_MoveState moveState;
@@ -46,6 +47,7 @@ public class Enemy : Entity
     protected override void Awake()
     {
         base.Awake();
+        stats = GetComponent<Entity_Stats>();
         health = GetComponent<Enemy_Health>();
     }
 

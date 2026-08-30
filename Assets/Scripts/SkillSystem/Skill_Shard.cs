@@ -65,6 +65,8 @@ public class Skill_Shard : Skill_Base
         {
             HandleShardHpRewind();
         }
+
+        SetSkillOnCoolDown();
     }
 
     private void HandleShardHpRewind()

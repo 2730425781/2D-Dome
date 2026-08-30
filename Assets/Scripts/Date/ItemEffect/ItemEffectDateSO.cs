@@ -22,7 +22,7 @@ public class ItemEffectDateSO : ScriptableObject
     /// 重写它的效果（如 Buff）在此判断“当前是否还能生效”，
     /// 让背包在真正消耗物品之前就拦截操作，而不是消耗完再回滚。
     /// </summary>
-    public virtual bool CanBeUsed()
+    public virtual bool CanBeUsed(Player player)
     {
         return true;
     }

@@ -9,7 +9,8 @@ using UnityEngine;
 /// </summary>
 public class UI_ToolTip : MonoBehaviour
 {
-    private RectTransform rect;
+    // protected：子类（技能/物品/属性提示框）覆写 UpdatePosition 定位时需要读取自身尺寸
+    protected RectTransform rect;
     // ToolTip 相对目标的偏移：(300, 20) 表示横向放到目标侧边 300px 处、
     // 上下各留 20px 边距，保证不遮住目标本身
     [SerializeField] private Vector2 offset = new Vector2(300, 20);
@@ -48,7 +49,7 @@ public class UI_ToolTip : MonoBehaviour
         UpdatePosition(targetRect);
     }
 
-    private void UpdatePosition(RectTransform targetRect)
+    protected virtual void UpdatePosition(RectTransform targetRect)
     {
         float screenCenterX = Screen.width / 2;
         float screenTop = Screen.height;

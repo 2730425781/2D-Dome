@@ -49,7 +49,7 @@ public class UI_SkillToolTip : UI_ToolTip
         base.ShowToolTip(show, targetRect);
     }
 
-    public void ShowToolTip(bool show, RectTransform targetRect, UI_TreeNode node)
+    public void ShowToolTip(bool show, RectTransform targetRect, SkillDataSO skillData, UI_TreeNode node)
     {
         // 同上：base 只负责定位，内容填充还在本方法里，销毁后必须整体放弃
         if (this == null) return;
@@ -57,21 +57,63 @@ public class UI_SkillToolTip : UI_ToolTip
         base.ShowToolTip(show, targetRect);
         if (!show) return;
 
-        // 节点或技能数据为空时直接返回：
         // 没有数据可展示，强行访问 skillData 会空引用崩溃
-        if (node == null || node.skillData == null) return;
+        if (skillData == null) return;
 
-        if (skillName != null) skillName.text = node.skillData.displayName;
-        if (skillDescription != null) skillDescription.text = node.skillData.description;
+        if (skillName != null)
+            skillName.text = skillData.displayName;
+
+        if (skillDescription != null)
+            skillDescription.text = skillData.description;
         // 逐字段判空：这些文本组件在 Inspector 中可能单独漏配，
         // 判空避免某一个未赋值时整个 ToolTip 崩掉
-        if (skillDescription != null) skillCooldown.text = "冷却时间：" + node.skillData.upgradeDate.cooldown + "秒";
+        if (skillDescription != null)
+            skillCooldown.text = "冷却时间：" + skillData.upgradeDate.cooldown + "秒";
         else Debug.LogWarning("skillDescription TextMeshPro 未在 Inspector 中赋值");
+
+        if (node == null)
+        {
+            skillRequirements.text = "";
+            return;
+        }
 
         string skillLockedText = GetColoredText(importantInfoHex, lockedSkillText);
         string requirements = node.isLocked ? skillLockedText : GetRequirements(node.skillData.cost, node.neededNodes, node.conflictNodes);
 
-        if (skillRequirements != null) skillRequirements.text = requirements;
+        if (skillRequirements != null)
+            skillRequirements.text = requirements;
+    }
+
+    /// <summary>
+    /// 技能提示框放在目标（技能槽位/技能节点）的**上方**而不是左右两侧：
+    /// 技能栏在屏幕底部、技能树节点居中，提示框浮在目标上面更符合"看技能说明"的直觉。
+    /// 放不下（超过屏幕顶）时翻到目标下方，并用屏幕边界夹紧。
+    /// </summary>
+    protected override void UpdatePosition(RectTransform targetRect)
+    {
+        float screenWidth = Screen.width;
+        float screenHeight = Screen.height;
+        float halfW = rect.sizeDelta.x / 2;
+        float halfH = rect.sizeDelta.y / 2;
+        const float gap = 20f;
+
+        // 水平方向对准目标中心 X，并夹紧到屏幕内
+        Vector2 pos = targetRect.position;
+        pos.x = Mathf.Clamp(pos.x, halfW, screenWidth - halfW);
+
+        // 优先放目标上方：从目标中心向上偏移 半高+间隔，再留出提示框自身半高
+        float aboveY = pos.y + halfH + gap;
+        if (aboveY + halfH <= screenHeight)
+        {
+            pos.y = aboveY;
+        }
+        else
+        {
+            // 上方放不下：翻到目标下方，并夹紧到屏幕内
+            pos.y = Mathf.Clamp(pos.y - halfH - gap, halfH, screenHeight - halfH);
+        }
+
+        rect.position = pos;
     }
 
     // 逐行生成需求说明：用 StringBuilder 而不是字符串 += 拼接，

@@ -34,9 +34,8 @@ public class Object_Merchant : Object_NPC, IInteractable
 
     public void Interact()
     {
-        // 占位实现：先验证交互链路通不通，真正的商店 UI 在这里接入
         ui.merchantUI.SetupMerchantUI(merchantInventory, playerInventory, materialInventory);
-        ui.merchantUI.gameObject.SetActive(true);
+        ui.OpenMerchantUI(true);
     }
 
     protected override void OnTriggerEnter2D(Collider2D collision)
@@ -49,7 +48,7 @@ public class Object_Merchant : Object_NPC, IInteractable
     protected override void OnTriggerExit2D(Collider2D collision)
     {
         base.OnTriggerExit2D(collision);
-        ui.SwitchoffAllTooltips();
+        ui.HideAllTooltips();
 
         if (ui == null || ui.merchantUI == null)
         {
@@ -57,7 +56,7 @@ public class Object_Merchant : Object_NPC, IInteractable
         }
         else
         {
-            ui.merchantUI.gameObject.SetActive(false);
+            ui.OpenMerchantUI(false);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 /// <summary>
@@ -10,6 +11,7 @@ using UnityEngine;
 public class UI_SkillTree : MonoBehaviour
 {
     [SerializeField] private int skillPoints;
+    [SerializeField] private TextMeshProUGUI skillPointsText;
     [SerializeField] private UI_TreeConnectionHandler[] parentNodes;
     [SerializeField] private UI_TreeNode[] allTreeNodes;
 
@@ -18,8 +20,17 @@ public class UI_SkillTree : MonoBehaviour
     // 点数读写全部收口在这三个方法：
     // 节点不直接改 skillPoints，解锁判定永远基于同一份数据
     public bool EnoughSkillPoints(int cost) => skillPoints >= cost;
-    public void RemoveSkillPoints(int cost) => skillPoints -= cost;
-    public void AddSkillPoints(int points) => skillPoints += points;
+    public void RemoveSkillPoints(int cost)
+    {
+        skillPoints -= cost;
+        UpdateSkillPointsUI();
+    }
+
+    public void AddSkillPoints(int points)
+    {
+        skillPoints += points;
+        UpdateSkillPointsUI();
+    }
 
     private void Start()
     {
@@ -27,6 +38,12 @@ public class UI_SkillTree : MonoBehaviour
         // 需要等所有节点/连线组件的 Awake 执行完、引用就绪后，
         // 才能算出正确的连线位置与锁定颜色
         UpdateAllConnections();
+        UpdateSkillPointsUI();
+    }
+
+    private void UpdateSkillPointsUI()
+    {
+        skillPointsText.text = skillPoints.ToString();
     }
 
     public void UnlockDefaultSkills()

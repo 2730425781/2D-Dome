@@ -10,6 +10,7 @@ using UnityEngine;
 /// </summary>
 public class Inventory_Base : MonoBehaviour
 {
+    protected Player player;
     public event Action OnInventoryChange;
     public int maxInventorySixe = 10;
     public List<Inventory_Item> itemList = new List<Inventory_Item>();
@@ -18,7 +19,7 @@ public class Inventory_Base : MonoBehaviour
     // 同时基类本身没有必须的初始化，避免强制子类背负不必要的初始化顺序。
     protected virtual void Awake()
     {
-
+        player = GetComponent<Player>();
     }
 
     public void TryUseItem(Inventory_Item itemToUse)
@@ -27,6 +28,8 @@ public class Inventory_Base : MonoBehaviour
 
         // 物品不在本背包（如已用光）时直接放弃：防止对空引用执行效果导致空引用异常
         if (consumable == null) return;
+
+        if (consumable.itemEffect.CanBeUsed(player) == false) return;
 
         // 先执行效果再处理数量：效果只关心“用了这个物品”，与剩余数量无关
         consumable.itemEffect.ExecuteEffect();
@@ -59,17 +62,9 @@ public class Inventory_Base : MonoBehaviour
     /// </summary>
     public Inventory_Item FindAddStack(Inventory_Item itemToAdd)
     {
-        List<Inventory_Item> stackItems = itemList.FindAll(item => item.itemDate == itemToAdd.itemDate);
+        return itemList.Find(item => item.itemDate == itemToAdd.itemDate && item.CanAddStack());
 
-        foreach (var stack in stackItems)
-        {
-            if (stack.CanAddStack())
-            {
-                return stack;
-            }
-        }
 
-        return null;
     }
 
     /// <summary>
@@ -127,6 +122,13 @@ public class Inventory_Base : MonoBehaviour
     public Inventory_Item FindItem(ItemDateSO itemDate)
     {
         return itemList.Find(item => item.itemDate == itemDate);
+    }
+
+    public Inventory_Item FindSameItem(Inventory_Item itemToFind)
+    {
+        // 注意必须是 == 比较：之前误写成单等号 =（赋值），会覆盖每个物品的 itemDate，
+        // 且 Find 的谓词返回 ItemDateSO 无法转 bool，直接导致编译错误、整个背包挂掉
+        return itemList.Find(item => item.itemDate == itemToFind.itemDate);
     }
 
     // 公开一个语义化的包装方法而非直接暴露事件调用：外部只知道“数据变了请刷新 UI”，

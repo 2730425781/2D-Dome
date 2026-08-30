@@ -11,10 +11,10 @@ public class Player_AirState : PlayerState
         base.Update();
 
         // 空中水平移动？        // - 如果已检测到墙体 → x 速度归零，避免推入墙体导致物理异常        // - 否则按输入方向施加空气减速后的水平速度
-            // 墙检测避免推入墙体导致物理抖动；见类注释
-            if (player.wallDetected)
-            {
-                player.SetVelocity(0, rb.linearVelocity.y);
+        // 墙检测避免推入墙体导致物理抖动；见类注释
+        if (player.wallDetected)
+        {
+            player.SetVelocity(0, rb.linearVelocity.y);
         }
         else if (player.moveInput.x != 0)
         {
@@ -27,6 +27,18 @@ public class Player_AirState : PlayerState
         {
             stateMachine.ChangeState(player.jumpAttackState);
         }
+    }
+
+    public override void Enter()
+    {
+        base.Enter();
+        animator.SetBool("inAir", true);
+    }
+
+    public override void Exit()
+    {
+        base.Exit();
+        animator.SetBool("inAir", false);
     }
 }
 /// 空中状态的基类（Fall / Jump 的父类）。
