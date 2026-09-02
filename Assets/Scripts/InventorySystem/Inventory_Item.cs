@@ -14,7 +14,7 @@ public class Inventory_Item
     // 每个实例的唯一 id：装备属性修改器用该 id 登记来源，卸载装备时按 id 精确移除，避免误删其他装备的加成
     private string itemId;
 
-    public ItemDateSO itemDate;
+    public ItemDataSO itemDate;
     public int stackSize = 1;
     public ItemModifier[] modifiers { get; private set; }
     public ItemEffectDateSO itemEffect;
@@ -22,7 +22,7 @@ public class Inventory_Item
     public int buyPrice { get; private set; }
     public float sellPride { get; private set; }
 
-    public Inventory_Item(ItemDateSO itemDate)
+    public Inventory_Item(ItemDataSO itemDate)
     {
         this.itemDate = itemDate;
         // 只有装备（EquipmentDateSO）才带属性修改器；普通消耗品这里得到 null，反正也不会被穿戴

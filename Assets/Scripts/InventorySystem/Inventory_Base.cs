@@ -8,12 +8,16 @@ using UnityEngine;
 /// 用 C# event 而非直接调用 UI 刷新，是为了把“数据变更 → 界面刷新”解耦：
 /// UI 只需订阅一次 OnInventoryChange，之后任何增删改都会自动触发刷新，新增其他监听方也无需改动这里。
 /// </summary>
-public class Inventory_Base : MonoBehaviour
+public class Inventory_Base : MonoBehaviour, ISaveable
 {
     protected Player player;
+
     public event Action OnInventoryChange;
     public int maxInventorySixe = 10;
     public List<Inventory_Item> itemList = new List<Inventory_Item>();
+
+    [Header("物品数据列表")]
+    [SerializeField] protected ItemListDateSO itemDataBase;
 
     // Awake 做成 virtual 空实现：子类（如玩家背包）可安全调用 base.Awake() 来保留基类契约，
     // 同时基类本身没有必须的初始化，避免强制子类背负不必要的初始化顺序。
@@ -119,7 +123,7 @@ public class Inventory_Base : MonoBehaviour
     /// 按物品数据查找背包中的实际实例。调用方往往只有数据资产（例如要穿戴的装备定义），
     /// 必须通过这里拿到背包里真实存在的实例，后续的堆叠、移除操作才有意义。
     /// </summary>
-    public Inventory_Item FindItem(ItemDateSO itemDate)
+    public Inventory_Item FindItem(ItemDataSO itemDate)
     {
         return itemList.Find(item => item.itemDate == itemDate);
     }
@@ -134,4 +138,14 @@ public class Inventory_Base : MonoBehaviour
     // 公开一个语义化的包装方法而非直接暴露事件调用：外部只知道“数据变了请刷新 UI”，
     // 不需要关心事件是否为 null（?. 在这里被隐藏）
     public void TriggerUpdateUI() => OnInventoryChange?.Invoke();
+
+    public virtual void LoadData(GameData data)
+    {
+
+    }
+
+    public virtual void SaveData(ref GameData data)
+    {
+
+    }
 }

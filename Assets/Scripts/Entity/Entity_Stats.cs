@@ -7,7 +7,7 @@ public class Entity_Stats : MonoBehaviour
 {
     [Header("属性设置")]
     [InspectorName("默认设置")]
-    public StatDateSO defaultStatSetup;
+    public StatDataSO defaultStatSetup;
 
     [Header("基础属性")]
     [InspectorName("资源属性")]
@@ -27,7 +27,7 @@ public class Entity_Stats : MonoBehaviour
 
     }
 
-    public AttackDate GetAttackDate(DamageScaleDate damageScale)
+    public AttackDate GetAttackDate(DamageScaleData damageScale)
     {
         return new AttackDate(this, damageScale);
     }

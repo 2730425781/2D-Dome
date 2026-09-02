@@ -52,7 +52,7 @@ public class UI_Craft : MonoBehaviour, IDropHandler
         UI_ItemSlot source = eventData.pointerDrag != null ? eventData.pointerDrag.GetComponent<UI_ItemSlot>() : null;
         if (source == null || source.itemInSlot == null || craftPreviwUI == null) return;
 
-        ItemDateSO droppedItem = source.itemInSlot.itemDate;
+        ItemDataSO droppedItem = source.itemInSlot.itemDate;
 
         if (craftSlots == null || craftListButtons == null) SetupCraftListButtons();
 

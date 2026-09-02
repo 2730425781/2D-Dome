@@ -50,7 +50,7 @@ public class UI_CraftPreviw : MonoBehaviour
         UpdateCraftPreviwSlots();
     }
 
-    public void UpdateCraftPreviw(ItemDateSO itemDate)
+    public void UpdateCraftPreviw(ItemDataSO itemDate)
     {
         itemToCraft = new Inventory_Item(itemDate);
         itemIcon.sprite = itemDate.itemIcon;
@@ -63,7 +63,7 @@ public class UI_CraftPreviw : MonoBehaviour
     }
 
     /// <summary>拖入的物品没有对应配方时，在预览区给出提示并清空材料需求。</summary>
-    public void ShowCannotCraft(ItemDateSO itemDate)
+    public void ShowCannotCraft(ItemDataSO itemDate)
     {
         itemIcon.sprite = itemDate != null ? itemDate.itemIcon : null;
         itemName.text = itemDate != null ? itemDate.itemName : "";

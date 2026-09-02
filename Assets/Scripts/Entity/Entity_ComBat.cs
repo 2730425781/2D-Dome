@@ -17,7 +17,7 @@ public class Entity_Combat : MonoBehaviour
     private Entity_Stats stats;
     private Entity_VFX entity_VFX;
 
-    public DamageScaleDate basicAttackScale;
+    public DamageScaleData basicAttackScale;
 
     [Header("目标检测")]
     [SerializeField] private Transform targetCheck;          // 攻击检测点

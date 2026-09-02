@@ -167,6 +167,22 @@ public class UI_TreeNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         skill.SetSkillUpgrade(skillData);
     }
 
+    public void UnlockWithSaveData()
+    {
+        isUnLocked = true;
+        UpdateIconColor(Color.white);
+        LockConflictNodes();
+
+        if (connectionHandler == null)
+        {
+            Debug.LogWarning("未找到 UI_TreeConnectionHandler 组件，无法更新连线颜色");
+        }
+        else
+        {
+            connectionHandler.ConnectionImageUnlocked(true);
+        }
+    }
+
     // 判定顺序即优先级：锁定 > 已解锁 > 技能点 > 前置 > 冲突。
     // "已解锁"也判为不可再点，防止重复点击扣两次技能点
     private bool CanBeUnlocked()

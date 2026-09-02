@@ -11,7 +11,7 @@ using UnityEngine;
 public class Skill_Base : MonoBehaviour
 {
     public Player player { get; private set; }
-    public DamageScaleDate damageScaleDate { get; private set; }
+    public DamageScaleData damageScaleDate { get; private set; }
     public Player_SkillManager skillManager { get; private set; }
 
     [Header("技能详情")]
@@ -26,7 +26,7 @@ public class Skill_Base : MonoBehaviour
         // 技能组件挂在玩家子物体上，避免在 Inspector 里手动拖引用
         player = GetComponentInParent<Player>();
         skillManager = GetComponentInParent<Player_SkillManager>();
-        damageScaleDate = new DamageScaleDate();
+        damageScaleDate = new DamageScaleData();
     }
 
     public virtual void TryUseSkill()
@@ -79,6 +79,9 @@ public class Skill_Base : MonoBehaviour
     /// 子类用这个帮助方法决定是否执行某个效果。
     /// </summary>
     protected bool Unlocked(SkillUpgradeType upgradeCheck) => upgradeType == upgradeCheck;
+
+    public SkillUpgradeType GetUpgrade() => upgradeType;
+    public SkillType GetSkillType() => skillType;
 
     // lastTimeToUsed == 0 表示从未使用过，首次使用不算冷却
     protected bool OnCoolDown() => lastTimeToUsed == 0 ? false : Time.time <= lastTimeToUsed + cooldown;

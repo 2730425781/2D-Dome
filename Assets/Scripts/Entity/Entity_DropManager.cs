@@ -21,7 +21,7 @@ public class Entity_DropManager : MonoBehaviour
 
     public virtual void DropItems()
     {
-        List<ItemDateSO> itemToDrops = RollDrops();
+        List<ItemDataSO> itemToDrops = RollDrops();
         int amountToDrop = Mathf.Min(itemToDrops.Count, maxItemToDrop);
 
         for (int i = 0; i < amountToDrop; i++)
@@ -30,7 +30,7 @@ public class Entity_DropManager : MonoBehaviour
         }
     }
 
-    protected void CreateItemDrop(ItemDateSO itemDate)
+    protected void CreateItemDrop(ItemDataSO itemDate)
     {
         // 出生点抬高 1 单位：物品碰撞器是 1x1，直接生成在脚下会有一半埋进地面，
         // 物理解算立刻把它顶出来并判为"落地"，还没起飞就冻结在出生点
@@ -39,10 +39,10 @@ public class Entity_DropManager : MonoBehaviour
         newItem.GetComponent<Object_ItemPickup>().SetupItem(itemDate);
     }
 
-    public List<ItemDateSO> RollDrops()
+    public List<ItemDataSO> RollDrops()
     {
-        List<ItemDateSO> possibleDrops = new List<ItemDateSO>();
-        List<ItemDateSO> finalDrops = new List<ItemDateSO>();
+        List<ItemDataSO> possibleDrops = new List<ItemDataSO>();
+        List<ItemDataSO> finalDrops = new List<ItemDataSO>();
         float maxRarityAmount = this.maxRarityAmount;
 
         foreach (var item in dropDate.itemList)

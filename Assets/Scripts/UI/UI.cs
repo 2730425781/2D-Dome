@@ -20,6 +20,7 @@ public class UI : MonoBehaviour
     public UI_Merchant merchantUI { get; private set; }
     public UI_Inventory inventoryUI { get; private set; }
     public UI_SkillTree skillTreeUI { get; private set; }
+    public UI_PauseMenu pauseMenu { get; private set; }
     public UI_ItemToolTip itemToolTip { get; private set; }
     public UI_StatToolTip statToolTip { get; private set; }
     public UI_SkillToolTip skillToolTip { get; private set; }
@@ -41,6 +42,7 @@ public class UI : MonoBehaviour
         merchantUI = GetComponentInChildren<UI_Merchant>(true);
         skillTreeUI = GetComponentInChildren<UI_SkillTree>(true);
         inventoryUI = GetComponentInChildren<UI_Inventory>(true);
+        pauseMenu = GetComponentInChildren<UI_PauseMenu>(true);
 
         // 以场景中的初始显隐状态为准记录开关标志，
         // 这样设计师在场景里把面板设成隐藏也能正确切换到"打开"
@@ -64,19 +66,35 @@ public class UI : MonoBehaviour
 
         input.UI.ToggleOptionsUI.performed += ctx =>
         {
-            foreach (var element in uiElements)
+            // 保留原有"ESC 关闭已打开的 UI"功能：
+            // 有任一面板打开 → 全部关闭并回到游戏；否则 → 打开暂停菜单
+            if (AnyPanelOpen())
             {
-                if (element.activeSelf)
-                {
-                    Time.timeScale = 1;
-                    SwitchToGameUI();
-                    return;
-                }
+                Time.timeScale = 1;
+                SwitchToGameUI();
+                return;
             }
 
-            Time.timeScale = 0;
-            OpenOptionsUI();
+            pauseMenu.Toggle();
         };
+    }
+
+    // 是否有任一面板处于打开状态（用于 ESC 优先关闭而非打开菜单）。
+    // 不依赖 uiElements 配置，直接检查各面板活动状态，避免漏配导致 ESC 无法关闭。
+    private bool AnyPanelOpen()
+    {
+        if (skillTreeUI != null && skillTreeUI.gameObject.activeSelf) return true;
+        if (inventoryUI != null && inventoryUI.gameObject.activeSelf) return true;
+        if (optionsUI != null && optionsUI.gameObject.activeSelf) return true;
+
+        if (uiElements != null)
+        {
+            foreach (var element in uiElements)
+            {
+                if (element != null && element.activeSelf) return true;
+            }
+        }
+        return false;
     }
 
     public void OpenOptionsUI()

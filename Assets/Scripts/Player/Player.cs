@@ -18,6 +18,8 @@ using UnityEngine;
 [RequireComponent(typeof(Player_Combat))]
 public class Player : Entity
 {
+    public static Player instance;
+
     public UI ui { get; private set; }
     // 玩家死亡时通知所有订阅者（比如敌人停止战斗行为）
     public static event Action OnPlayerDeath;
@@ -77,6 +79,8 @@ public class Player : Entity
     protected override void Awake()
     {
         base.Awake();
+
+        instance = this;
 
         ui = FindAnyObjectByType<UI>();
         vfx = GetComponent<Player_VFX>();

@@ -32,7 +32,7 @@ public class Inventoty_Storage : Inventory_Base
         TriggerUpdateUI();
     }
 
-    private int ConsumedMaterialsAmount(List<Inventory_Item> itemLists, ItemDateSO neededItemDate, int amountNeeded)
+    private int ConsumedMaterialsAmount(List<Inventory_Item> itemLists, ItemDataSO neededItemDate, int amountNeeded)
     {
         int consumedAmount = 0;
         // 迭代过程中不能直接 Remove（List 会在枚举时抛 InvalidOperationException），
@@ -85,7 +85,7 @@ public class Inventoty_Storage : Inventory_Base
         return true;
     }
 
-    public int GetAvaliableAmount(ItemDateSO itemDate)
+    public int GetAvaliableAmount(ItemDataSO itemDate)
     {
         int amount = 0;
 
@@ -224,5 +224,94 @@ public class Inventoty_Storage : Inventory_Base
         }
 
         TriggerUpdateUI();
+    }
+
+    public override void SaveData(ref GameData data)
+    {
+        base.SaveData(ref data);
+
+        data.storageItems.Clear();
+
+        foreach (var item in itemList)
+        {
+            if (item != null && item.itemDate != null)
+            {
+                string saveID = item.itemDate.saveID;
+
+                if (!data.storageItems.ContainsKey(saveID))
+                {
+                    data.storageItems[saveID] = 0;
+                }
+
+                data.storageItems[saveID] += item.stackSize;
+            }
+        }
+
+        data.stroageMaterials.Clear();
+
+        foreach (var item in materialStash)
+        {
+            if (item != null && item.itemDate != null)
+            {
+                string saveID = item.itemDate.saveID;
+
+                if (!data.stroageMaterials.ContainsKey(saveID))
+                {
+                    data.stroageMaterials[saveID] = 0;
+                }
+
+                data.stroageMaterials[saveID] += item.stackSize;
+            }
+        }
+    }
+
+    public override void LoadData(GameData data)
+    {
+        itemList.Clear();
+        materialStash.Clear();
+
+        foreach (var entry in data.storageItems)
+        {
+            string saveID = entry.Key;
+            int stackSize = entry.Value;
+
+            var itemData = itemDataBase.GetItemData(saveID);
+
+            if (itemData != null)
+            {
+                for (int i = 0; i < stackSize; i++)
+                {
+                    Inventory_Item itemToLoad = new Inventory_Item(itemData);
+                    AddItem(itemToLoad);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"未找到物品数据，saveID: {saveID}");
+                continue;
+            }
+        }
+
+        foreach (var entry in data.stroageMaterials)
+        {
+            string saveID = entry.Key;
+            int stackSize = entry.Value;
+
+            var itemData = itemDataBase.GetItemData(saveID);
+
+            if (itemData != null)
+            {
+                for (int i = 0; i < stackSize; i++)
+                {
+                    Inventory_Item itemToLoad = new Inventory_Item(itemData);
+                    AddItem(itemToLoad);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"未找到物品数据，saveID: {saveID}");
+                continue;
+            }
+        }
     }
 }

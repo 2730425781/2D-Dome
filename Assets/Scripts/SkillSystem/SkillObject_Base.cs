@@ -22,7 +22,7 @@ public class SkillObject_Base : MonoBehaviour
     protected Rigidbody2D rb;
     protected Animator animator;
     protected Entity_Stats playerStats;         // 从技能管理器传入的玩家属性，用于计算伤害
-    protected DamageScaleDate damageScaleDate;  // 技能升级后附加的伤害缩放配置
+    protected DamageScaleData damageScaleDate;  // 技能升级后附加的伤害缩放配置
     protected ElementType usedElement;          // 最近一次命中使用的元素，供 VFX 等使用
     protected bool targetGoHit;                 // 最近一次命中是否成功打中目标
     protected Transform lastTarget;             // 最近一次命中的目标，供 Time Echo 复制等使用

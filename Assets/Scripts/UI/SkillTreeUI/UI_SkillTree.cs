@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ using UnityEngine;
 /// 技能点是所有节点共享的资源（解锁扣点、重置退点），必须只有一个
 /// 数据源，节点只能通过方法读写，避免各节点持有的点数互相不同步。
 /// </summary>
-public class UI_SkillTree : MonoBehaviour
+public class UI_SkillTree : MonoBehaviour, ISaveable
 {
     [SerializeField] private int skillPoints;
     [SerializeField] private TextMeshProUGUI skillPointsText;
@@ -84,6 +85,54 @@ public class UI_SkillTree : MonoBehaviour
         {
             if (node == null) continue;
             node.UpdateAllConnections();
+        }
+    }
+
+    public void LoadData(GameData data)
+    {
+        skillPoints = data.skillPoints;
+
+        foreach (var node in allTreeNodes)
+        {
+            string skillName = node.skillData.displayName;
+
+            // 必须同时校验保存的值 unLocked：之前只判断"键是否存在"就解锁，
+            // 导致保存数据里出现过的技能无论当时是否解锁，加载后图标全被点亮
+            if (data.skillTreeUI.TryGetValue(skillName, out bool unLocked) && unLocked)
+            {
+                node.UnlockWithSaveData();
+            }
+        }
+
+        foreach (var skill in skillManager.allSkills)
+        {
+            if (data.skillUpgrades.TryGetValue(skill.GetSkillType(), out SkillUpgradeType upgradeType))
+            {
+                var upgradeNode = allTreeNodes.FirstOrDefault(node => node.skillData.upgradeDate.upgradeType == upgradeType);
+
+                if (upgradeNode != null)
+                {
+                    skill.SetSkillUpgrade(upgradeNode.skillData);
+                }
+            }
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        data.skillTreeUI.Clear();
+        data.skillUpgrades.Clear();
+        data.skillPoints = skillPoints;
+
+        foreach (var node in allTreeNodes)
+        {
+            string skillName = node.skillData.displayName;
+            data.skillTreeUI[skillName] = node.isUnLocked;
+        }
+
+        foreach (var skill in skillManager.allSkills)
+        {
+            data.skillUpgrades[skill.GetSkillType()] = skill.GetUpgrade();
         }
     }
 }

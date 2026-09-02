@@ -11,7 +11,7 @@ public class UI_CraftListButton : MonoBehaviour
     public ItemListDateSO CraftDate => craftDate;
 
     /// <summary>该分类的产物列表中是否包含指定物品。</summary>
-    public bool ContainsProduct(ItemDateSO itemDate)
+    public bool ContainsProduct(ItemDataSO itemDate)
     {
         if (craftDate == null || itemDate == null) return false;
 
@@ -39,7 +39,7 @@ public class UI_CraftListButton : MonoBehaviour
         int showCount = Mathf.Min(craftDate.itemList.Length, craftSlots.Length);
         for (int i = 0; i < showCount; i++)
         {
-            ItemDateSO itemDate = craftDate.itemList[i];
+            ItemDataSO itemDate = craftDate.itemList[i];
 
             craftSlots[i].gameObject.SetActive(true);
             craftSlots[i].SetupButton(itemDate);

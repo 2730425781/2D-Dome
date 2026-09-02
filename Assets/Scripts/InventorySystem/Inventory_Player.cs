@@ -11,9 +11,11 @@ public class Inventory_Player : Inventory_Base
     public event Action<int, Inventory_Item> OnQuickSlotUsed;
     // 按下快捷栏按键使用物品后触发（不区分"设置/使用"，仅在使用时发出），用于 UI 变暗反馈
     public event Action<int> OnQuickItemUsed;
-    public int gold = 10000;
     public List<Inventory_EquipmentSlot> equipList;
     public Inventoty_Storage storage { get; private set; }
+
+    [Header("金币")]
+    public int gold = 10000;
 
     [Header("快速物品栏")]
     [SerializeField]
@@ -167,5 +169,80 @@ public class Inventory_Player : Inventory_Base
         item.RemoveItemEffect();
         player.health.SetHealthPercentage(saveHealthPercent);
         AddItem(item);
+    }
+
+    public override void SaveData(ref GameData data)
+    {
+        data.gold = gold;
+        data.inventory.Clear();
+        data.equipedItems.Clear();
+
+        foreach (var item in itemList)
+        {
+            if (item != null && item.itemDate != null)
+            {
+                string saveID = item.itemDate.saveID;
+
+                if (!data.inventory.ContainsKey(saveID))
+                {
+                    data.inventory[saveID] = 0;
+                }
+
+                data.inventory[saveID] += item.stackSize;
+            }
+        }
+
+        foreach (var slot in equipList)
+        {
+            if (slot.HasItem())
+            {
+                data.equipedItems[slot.equipedItem.itemDate.saveID] = slot.slotType;
+            }
+        }
+    }
+
+    public override void LoadData(GameData data)
+    {
+        gold = data.gold;
+
+        foreach (var entry in data.inventory)
+        {
+            string saveID = entry.Key;
+            int stackSize = entry.Value;
+
+            var itemData = itemDataBase.GetItemData(saveID);
+
+            if (itemData != null)
+            {
+                for (int i = 0; i < stackSize; i++)
+                {
+                    Inventory_Item itemToLoad = new Inventory_Item(itemData);
+                    AddItem(itemToLoad);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"未找到物品数据，saveID: {saveID}");
+                continue;
+            }
+        }
+
+        foreach (var entry in data.equipedItems)
+        {
+
+            string saveID = entry.Key;
+            ItemType itemSlotType = entry.Value;
+
+            ItemDataSO itemData = itemDataBase.GetItemData(saveID);
+            Inventory_Item itemToLoad = new Inventory_Item(itemData);
+
+            var slot = equipList.Find(slot => slot.slotType == itemSlotType && slot.HasItem() == false);
+
+            slot.equipedItem = itemToLoad;
+            slot.equipedItem.AddModfifiers(player.stats);
+            slot.equipedItem.AddItemEffect(player);
+        }
+
+        TriggerUpdateUI();
     }
 }

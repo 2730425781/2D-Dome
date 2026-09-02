@@ -25,7 +25,7 @@ public class Object_Blacksmith : Object_NPC, IInteractable
         ui.storageUI.SetupStorageUI(storage);
         ui.craftUI.SetupCraftUI(storage);
 
-        ui.OpenMerchantUI(true);
+        ui.OpenStorageUI(true);
     }
 
     protected override void OnTriggerEnter2D(Collider2D collision)

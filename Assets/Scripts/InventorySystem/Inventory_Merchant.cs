@@ -39,7 +39,6 @@ public class Inventory_Merchant : Inventory_Base
                 // 否则会出现"钱花了、商店物品没了、但背包里什么都没多"的情况
                 if (!playerInventory.CanAddItem(itemToBuy))
                 {
-                    Debug.Log("背包已满，无法购买");
                     return;
                 }
 
@@ -51,7 +50,6 @@ public class Inventory_Merchant : Inventory_Base
         }
 
         TriggerUpdateUI();
-        Debug.Log("成功购买物品");
     }
 
     public void TrySellItem(Inventory_Item itemToSell, bool sellFullStack)
@@ -75,7 +73,6 @@ public class Inventory_Merchant : Inventory_Base
         }
 
         TriggerUpdateUI();
-        Debug.Log("成功卖出物品");
     }
 
     public void FillShopList()

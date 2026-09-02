@@ -37,7 +37,7 @@ public class Entity_StatusHandler : MonoBehaviour
         entityVFX.StopAllVFX();
     }
 
-    public void ApplyStatusEffect(ElementType element, ElementalEffectDate effectDate)
+    public void ApplyStatusEffect(ElementType element, ElementalEffectData effectDate)
     {
         switch (element)
         {

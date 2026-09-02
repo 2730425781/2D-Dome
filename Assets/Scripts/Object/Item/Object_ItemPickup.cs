@@ -17,7 +17,7 @@ public class Object_ItemPickup : MonoBehaviour
     // 仅在编辑器的 OnValidate 中用于预览图标，运行时用不到
     // 数据源用 ScriptableObject：同一配置可被多个掉落物引用，
     // 改一处所有引用同步生效，且不会随每个场景重复拷贝数据
-    [SerializeField] private ItemDateSO itemDate;
+    [SerializeField] private ItemDataSO itemDate;
     [Space]
 
     [SerializeField] private SpriteRenderer sr;
@@ -38,7 +38,7 @@ public class Object_ItemPickup : MonoBehaviour
         SetupVisuals();
     }
 
-    public void SetupItem(ItemDateSO itemDate)
+    public void SetupItem(ItemDataSO itemDate)
     {
         this.itemDate = itemDate;
         SetupVisuals();
