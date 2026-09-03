@@ -99,21 +99,23 @@ public class UI_PauseMenu : MonoBehaviour
 
     private void BuildMenu()
     {
-        var canvasGo = new GameObject("PauseMenuCanvas", typeof(Canvas), typeof(GraphicRaycaster));
-        var canvas = canvasGo.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 500;
-        RectTransform canvasRt = canvasGo.GetComponent<RectTransform>();
-        canvasRt.SetParent(transform, false);
+        // 直接挂到主 Canvas（UI 对象）下，复用其 GraphicRaycaster 与 CanvasScaler。
+        // 不要创建"嵌套的子 Canvas"：ScreenSpaceOverlay 的子 Canvas 不会被主 EventSystem
+        // 正确命中，导致按钮点击无反应（RaycastAll 返回 0）。
+        RectTransform container = CreateRect("PauseMenu", transform);
+        container.SetAsLastSibling();          // 渲染在最上，盖住其它 UI
+        container.anchorMin = Vector2.zero;    // 铺满屏幕作为容器的定位基准
+        container.anchorMax = Vector2.one;
+        container.offsetMin = container.offsetMax = Vector2.zero;
 
-        mainPanel = CreatePanel(canvasRt, "MainPanel");
+        mainPanel = CreatePanel(container, "MainPanel");
         BuildMainMenu(mainPanel);
 
-        savePanel = CreatePanel(canvasRt, "SavePanel");
+        savePanel = CreatePanel(container, "SavePanel");
         savePanel.gameObject.SetActive(false);
         BuildSavePanel(savePanel);
 
-        menuRoot = canvasGo;
+        menuRoot = container.gameObject;
     }
 
     private RectTransform CreatePanel(RectTransform parent, string name)
@@ -135,26 +137,32 @@ public class UI_PauseMenu : MonoBehaviour
         float stepY = 120f;
         for (int i = 0; i < buttonLabels.Length; i++)
         {
+            // 用每层迭代独立的局部变量 index 捕获，避免 C# for 循环变量被所有 lambda
+            // 共享：否则所有按钮都指向最后一个 i，OnButton(4) 无对应 case -> 点击无反应。
+            int index = i;
             string label = buttonLabels[i];
-            AddButton(panel, label, new Vector2(0, startY - i * stepY), new Vector2(320, 70), () => OnButton(i));
+            AddButton(panel, label, new Vector2(0, startY - i * stepY), new Vector2(320, 70), () => OnButton(index));
         }
     }
 
     private void BuildSavePanel(RectTransform panel)
     {
-        AddText(panel, "存档", 34, new Vector2(0, 240), new Vector2(360, 50));
+        // 存档面板布局与主菜单一致：全部用"面板中心"锚定，自上而下按均匀间距排布。
+        // 原来标题/返回用中心锚、行用底部锚，混用导致错位——标题偏高一大截、返回压到行上。
+        AddText(panel, "存档", 34, new Vector2(0, 200), new Vector2(360, 50));
 
         int slotCount = SaveManager.instance != null ? SaveManager.instance.SlotCount : 3;
         slotStatusTexts = new Text[slotCount];
 
-        float y = 120f;
+        // 依次下移 110，把 3 行 + 返回 均匀铺在面板中心下方
+        float startY = 90f;
+        float stepY = 110f;
         for (int slot = 1; slot <= slotCount; slot++)
         {
-            BuildSlotRow(panel, slot, y);
-            y -= 100f;
+            BuildSlotRow(panel, slot, startY - (slot - 1) * stepY);
         }
 
-        AddButton(panel, "返回", new Vector2(0, y), new Vector2(160, 60), () =>
+        AddButton(panel, "返回", new Vector2(0, startY - slotCount * stepY), new Vector2(160, 60), () =>
         {
             savePanel.gameObject.SetActive(false);
             mainPanel.gameObject.SetActive(true);
@@ -163,17 +171,20 @@ public class UI_PauseMenu : MonoBehaviour
 
     private void BuildSlotRow(RectTransform panel, int slot, float y)
     {
+        // 行同样用面板中心锚定，使其与标题/返回处于同一中心垂直线。
         RectTransform row = CreateRect("SlotRow_" + slot, panel);
-        row.anchorMin = new Vector2(0.5f, 0);
-        row.anchorMax = new Vector2(0.5f, 0);
+        row.anchorMin = new Vector2(0.5f, 0.5f);
+        row.anchorMax = new Vector2(0.5f, 0.5f);
         row.anchoredPosition = new Vector2(0, y);
-        row.sizeDelta = new Vector2(620, 80);
+        row.sizeDelta = new Vector2(760, 80);
 
-        AddText(row, "槽位 " + slot, 26, new Vector2(-210, 0), new Vector2(140, 50));
-        slotStatusTexts[slot - 1] = AddText(row, "无存档", 24, new Vector2(-50, 0), new Vector2(140, 50));
-        AddButton(row, "保存", new Vector2(110, 0), new Vector2(110, 60), () => SaveToSlot(slot));
-        AddButton(row, "加载", new Vector2(235, 0), new Vector2(110, 60), () => LoadFromSlot(slot));
-        AddButton(row, "删除", new Vector2(360, 0), new Vector2(110, 60), () => DeleteSlot(slot));
+        // 行内元素水平铺开，行宽 760 保证最右的"删除"按钮也落在面板内
+        // （原 620 过窄会把"删除"挤出面板右缘）。
+        AddText(row, "槽位 " + slot, 26, new Vector2(-275, 0), new Vector2(140, 50));
+        slotStatusTexts[slot - 1] = AddText(row, "无存档", 24, new Vector2(-115, 0), new Vector2(140, 50));
+        AddButton(row, "保存", new Vector2(70, 0), new Vector2(110, 60), () => SaveToSlot(slot));
+        AddButton(row, "加载", new Vector2(190, 0), new Vector2(110, 60), () => LoadFromSlot(slot));
+        AddButton(row, "删除", new Vector2(310, 0), new Vector2(110, 60), () => DeleteSlot(slot));
     }
 
     private void OnButton(int index)

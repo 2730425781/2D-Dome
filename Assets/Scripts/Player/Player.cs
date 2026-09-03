@@ -66,6 +66,8 @@ public class Player : Entity
     public float moveSpeed;                    // 地面移动速度
     public float jumpForce = 5;                // 跳跃力
     public float inAirMoveMultiplier = 0.65f;  // 空中移动倍率<1，让空中操控感更弱
+    [Tooltip("起跳后锁定水平方向输入的时长：期间角色沿跳跃初速直上，锁定结束才恢复空中转向")]
+    public float jumpRiseInputLock = 0.2f;     // 跳跃上升段方向输入锁定时间
     public float wallSlideSlowMultiplier = 0.65f; // 未使用
     public float wallSlideSpeed = 2f;          // 壁滑最大下落速度（防止物理碰撞求解把y速度压到0）
     public Vector2 wallJumpForce;              // 蹬墙跳速度

@@ -75906,6 +75906,7 @@ MonoBehaviour:
   moveSpeed: 8
   jumpForce: 16
   inAirMoveMultiplier: 0.65
+  jumpRiseInputLock: 0.22
   wallSlideSlowMultiplier: 0.7
   wallSlideSpeed: 2
   wallJumpForce: {x: 6, y: 16}

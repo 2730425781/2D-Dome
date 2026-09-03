@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 /// <summary>
 /// 跳跃状态（继承 AirState）。
@@ -15,6 +15,9 @@ public class Player_JumpState : Player_AirState
         base.Enter();
         player.SetVelocity(rb.linearVelocity.x, player.jumpForce);
         animator.SetBool("inAir", true);
+        // 起跳后先锁定水平方向输入一小段（jumpRiseInputLock），
+        // 让角色沿跳跃初速直上，锁定结束才恢复空中转向。
+        LockAirInputFor(player.jumpRiseInputLock);
     }
 
     public override void Update()
