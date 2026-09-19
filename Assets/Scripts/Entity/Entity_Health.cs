@@ -156,7 +156,7 @@ public class Entity_Health : MonoBehaviour, IDamagable
         // 通知 Entity 做死亡逻辑（状态切换等），而不是在这里直接操作状态机
         // 这样 Entity 的派生类（Player/Enemy）可以各自定制死亡行为
         entity?.EntityDeath();
-        dropManager.DropItems();
+        dropManager?.DropItems();
     }
 
     public float GetHealthPercentage() => currentHealth / entityStats.GetMaxHealth();

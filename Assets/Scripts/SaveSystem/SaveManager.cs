@@ -35,7 +35,7 @@ public class SaveManager : MonoBehaviour
         //Debug.Log(Application.persistentDataPath);
         allSaveable = FindISaveables();
 
-        yield return new WaitForSeconds(0.01f);
+        yield return null;
         LoadGame(1);   // 默认加载 1 号槽
     }
 
@@ -104,7 +104,10 @@ public class SaveManager : MonoBehaviour
     public void DeleteSaveData(int slot)
     {
         GetDataHandler(slot).Delete();
-        if (slot == CurrentSlot) gameData = null;
+        if (slot == CurrentSlot)
+            gameData = null;
+
+        LoadGame(slot);
     }
 
     private void OnApplicationQuit()

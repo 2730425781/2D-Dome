@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2125007291413057081}
   - component: {fileID: 1722217972120019848}
   - component: {fileID: 530198687702288817}
+  - component: {fileID: 8917078514192750509}
   m_Layer: 9
   m_Name: Object_Chest
   m_TagString: Untagged
@@ -122,6 +123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chest
   knockBack: {x: 0, y: 5}
+  canDropItem: 1
 --- !u!114 &530198687702288817
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,7 +143,23 @@ MonoBehaviour:
   critHitVFX: {fileID: 0}
   chillVFX: {r: 0, g: 1, b: 1, a: 1}
   burnVFX: {r: 1, g: 0, b: 0, a: 1}
-  electrifyVFX: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  shockVFX: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!114 &8917078514192750509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1678818752842045155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7a1aa1c8cd68d4685b7357b6be2b2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Entity_DropManager
+  itemDropPrefab: {fileID: 1678818752842045155}
+  dropDate: {fileID: 11400000, guid: 2e6aef3119e137640aa36a8388f3e329, type: 2}
+  maxRarityAmount: 1000
+  maxItemToDrop: 3
 --- !u!1 &1980005797993564556
 GameObject:
   m_ObjectHideFlags: 0

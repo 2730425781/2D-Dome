@@ -9,7 +9,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "游戏设置/物品数据/物品数据", fileName = "物品数据设置-")]
 public class ItemDataSO : ScriptableObject
 {
-    public string saveID { get; private set; }
+    public string saveID;
 
     [Header("信息设置")]
     public string itemName;

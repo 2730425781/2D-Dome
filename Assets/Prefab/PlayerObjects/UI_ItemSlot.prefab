@@ -52,8 +52,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UI_ItemSlot
   itemIcon: {fileID: 2037877119392093968}
   itemStackSize: {fileID: 4132166569582694955}
-  defaultSlotSprite: {fileID: -1862549681, guid: cba94a78b0c39414c8eb0ff013b15e60, type: 3}
-  defaultSlotColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &3199059180536000670
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,8 +194,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 367c3ea949589e84197843f4d729cff3, type: 2}
+  m_sharedMaterial: {fileID: -8191231966951190106, guid: 367c3ea949589e84197843f4d729cff3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

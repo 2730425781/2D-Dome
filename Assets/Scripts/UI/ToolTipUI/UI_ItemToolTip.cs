@@ -16,7 +16,7 @@ public class UI_ItemToolTip : UI_ToolTip
     [SerializeField] private TextMeshProUGUI itemPrice;
     [SerializeField] private Transform merchantInfo;
 
-    public void ShowToolTip(bool show, RectTransform targetRect, Inventory_Item item, bool buyPrice = false, bool showMerchantInfo = false)
+    public void ShowToolTip(bool show, RectTransform targetRect, Inventory_Item item, bool buyPrice = false, bool showMerchantInfo = false, bool showControls = true)
     {
         // 组件所在物体已被销毁时（关闭域重载的播放模式切换会残留托管引用），
         // base 里已提前返回，但这里还会访问 itemName 等子物体引用，
@@ -25,7 +25,14 @@ public class UI_ItemToolTip : UI_ToolTip
 
         base.ShowToolTip(show, targetRect);
 
-        merchantInfo.gameObject.SetActive(showMerchantInfo);
+        if (showControls)
+        {
+            merchantInfo.gameObject.SetActive(showMerchantInfo);
+        }
+        else
+        {
+            merchantInfo.gameObject.SetActive(false);
+        }
 
         int price = buyPrice ? item.buyPrice : Mathf.FloorToInt(item.sellPride);
 

@@ -419,6 +419,24 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DialogueUI_Interaction"",
+                    ""type"": ""Button"",
+                    ""id"": ""63da6ef5-3e2a-43d1-b4d3-423eb84265c8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DialogueNavigation"",
+                    ""type"": ""Button"",
+                    ""id"": ""9310c308-94d6-4f21-b992-42df389abef4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -465,6 +483,50 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
                     ""action"": ""AlternativeInput"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d0bee7ce-1700-4570-b878-8c0c3b0f4353"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard & Mouse"",
+                    ""action"": ""DialogueUI_Interaction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""5a68ab67-0bf2-492f-a545-9139ca4b6688"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DialogueNavigation"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""d8f4c024-e304-4f07-944a-29505e966abf"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard & Mouse"",
+                    ""action"": ""DialogueNavigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""e8d77ff7-81d3-4df4-b2cf-12161cb2c0e2"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard & Mouse"",
+                    ""action"": ""DialogueNavigation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -508,6 +570,8 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
         m_UI_SkillTreeUI = m_UI.FindAction("SkillTreeUI", throwIfNotFound: true);
         m_UI_InventoryUI = m_UI.FindAction("InventoryUI", throwIfNotFound: true);
         m_UI_AlternativeInput = m_UI.FindAction("AlternativeInput", throwIfNotFound: true);
+        m_UI_DialogueUI_Interaction = m_UI.FindAction("DialogueUI_Interaction", throwIfNotFound: true);
+        m_UI_DialogueNavigation = m_UI.FindAction("DialogueNavigation", throwIfNotFound: true);
     }
 
     ~@PlayerInputSet()
@@ -810,6 +874,8 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_SkillTreeUI;
     private readonly InputAction m_UI_InventoryUI;
     private readonly InputAction m_UI_AlternativeInput;
+    private readonly InputAction m_UI_DialogueUI_Interaction;
+    private readonly InputAction m_UI_DialogueNavigation;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -837,6 +903,14 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/AlternativeInput".
         /// </summary>
         public InputAction @AlternativeInput => m_Wrapper.m_UI_AlternativeInput;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/DialogueUI_Interaction".
+        /// </summary>
+        public InputAction @DialogueUI_Interaction => m_Wrapper.m_UI_DialogueUI_Interaction;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/DialogueNavigation".
+        /// </summary>
+        public InputAction @DialogueNavigation => m_Wrapper.m_UI_DialogueNavigation;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -875,6 +949,12 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
             @AlternativeInput.started += instance.OnAlternativeInput;
             @AlternativeInput.performed += instance.OnAlternativeInput;
             @AlternativeInput.canceled += instance.OnAlternativeInput;
+            @DialogueUI_Interaction.started += instance.OnDialogueUI_Interaction;
+            @DialogueUI_Interaction.performed += instance.OnDialogueUI_Interaction;
+            @DialogueUI_Interaction.canceled += instance.OnDialogueUI_Interaction;
+            @DialogueNavigation.started += instance.OnDialogueNavigation;
+            @DialogueNavigation.performed += instance.OnDialogueNavigation;
+            @DialogueNavigation.canceled += instance.OnDialogueNavigation;
         }
 
         /// <summary>
@@ -898,6 +978,12 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
             @AlternativeInput.started -= instance.OnAlternativeInput;
             @AlternativeInput.performed -= instance.OnAlternativeInput;
             @AlternativeInput.canceled -= instance.OnAlternativeInput;
+            @DialogueUI_Interaction.started -= instance.OnDialogueUI_Interaction;
+            @DialogueUI_Interaction.performed -= instance.OnDialogueUI_Interaction;
+            @DialogueUI_Interaction.canceled -= instance.OnDialogueUI_Interaction;
+            @DialogueNavigation.started -= instance.OnDialogueNavigation;
+            @DialogueNavigation.performed -= instance.OnDialogueNavigation;
+            @DialogueNavigation.canceled -= instance.OnDialogueNavigation;
         }
 
         /// <summary>
@@ -1071,5 +1157,19 @@ public partial class @PlayerInputSet: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAlternativeInput(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DialogueUI_Interaction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDialogueUI_Interaction(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DialogueNavigation" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDialogueNavigation(InputAction.CallbackContext context);
     }
 }

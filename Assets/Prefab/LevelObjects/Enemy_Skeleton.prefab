@@ -171,6 +171,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  questTargetID: Enemy_Skeleton
   battleMoveSpeed: 3
   attackDistance: 2
   battleTimeDuration: 5
