@@ -1,0 +1,91 @@
+# Unity 项目的换行符与二进制处理规则
+#
+# 为什么需要这个文件：
+# 仓库当前 core.autocrlf=true，签出时会把 LF 转成 CRLF，而 Unity 保存资源时写的是 LF。
+# 两边不一致 → 每次在 Unity 里保存场景/预制体，git 都会认为整个文件被改写，
+# 产生几十万行的"换行符噪音"差异，真正的改动完全淹没在里面。
+# .gitattributes 按路径覆盖 core.autocrlf，让仓库与工作区统一为 LF。
+
+# ---------- Unity 文本资源：统一 LF ----------
+*.unity               text eol=lf
+*.prefab              text eol=lf
+*.asset               text eol=lf
+*.meta                text eol=lf
+*.mat                 text eol=lf
+*.anim                text eol=lf
+*.controller          text eol=lf
+*.overrideController  text eol=lf
+*.physicMaterial2D    text eol=lf
+*.physicsMaterial2D   text eol=lf
+*.spriteatlas         text eol=lf
+*.spriteatlasv2       text eol=lf
+*.mask                text eol=lf
+*.asmdef              text eol=lf
+*.asmref              text eol=lf
+*.inputactions        text eol=lf
+*.preset              text eol=lf
+*.lighting            text eol=lf
+*.giparams            text eol=lf
+
+# ---------- 代码与文本：统一 LF ----------
+*.cs                  text eol=lf
+*.shader              text eol=lf
+*.compute             text eol=lf
+*.cginc               text eol=lf
+*.hlsl                text eol=lf
+*.glsl                text eol=lf
+*.json                text eol=lf
+*.txt                 text eol=lf
+*.md                  text eol=lf
+*.xml                 text eol=lf
+*.yml                 text eol=lf
+*.yaml                text eol=lf
+
+# ---------- 二进制资源：禁止任何换行符转换与文本 diff ----------
+*.png                 binary
+*.jpg                 binary
+*.jpeg                binary
+*.psd                 binary
+*.tga                 binary
+*.gif                 binary
+*.bmp                 binary
+*.tif                 binary
+*.tiff                binary
+*.exr                 binary
+*.hdr                 binary
+*.fbx                 binary
+*.obj                 binary
+*.blend               binary
+*.ttf                 binary
+*.otf                 binary
+*.woff                binary
+*.woff2               binary
+*.eot                 binary
+*.dll                 binary
+*.so                  binary
+*.a                   binary
+*.lib                 binary
+*.pdb                 binary
+*.mp3                 binary
+*.ogg                 binary
+*.wav                 binary
+*.aif                 binary
+*.aiff                binary
+*.mp4                 binary
+*.webm                binary
+*.unitypackage        binary
+*.apk                 binary
+*.aab                 binary
+*.zip                 binary
+*.7z                  binary
+*.rar                 binary
+
+# ---------- Unity 自动生成目录：不参与 diff ----------
+# 这些目录应当被 .gitignore 排除；这里再兜一层，防止误提交后 git 去逐行比较
+Library/**            -diff
+Temp/**               -diff
+Logs/**               -diff
+obj/**                -diff
+Build/**              -diff
+Builds/**             -diff
+UserSettings/**       -diff

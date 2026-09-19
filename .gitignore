@@ -30,5 +30,6 @@
 Thumbs.db
 Desktop.ini
 
-# Git
-.gitattributes
+# 注意：不要忽略 .gitattributes。
+# 它负责统一资源换行符（Unity 写 LF，而 core.autocrlf=true 会转成 CRLF），
+# 忽略掉就无法入库共享，其他人克隆下来会重新出现整文件换行符差异。
