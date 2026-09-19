@@ -9,11 +9,18 @@ using UnityEngine;
 ///
 /// 现阶段 Interact 只是占位打印，后续会替换为打开商店面板。
 /// </summary>
-public class Object_Merchant : Object_NPC, IInteractable
+public class Object_Merchant : Object_NPC
 {
+    [Header("任务与对话")]
+    [SerializeField] private QuestDataSO[] questArray;
+    [SerializeField] private DialogueLineSO firstDialogueLine;
+
     private Inventory_Player playerInventory;
     private Inventory_Merchant merchantInventory;
     private Inventoty_Storage materialInventory;
+
+    /// <summary>商人发布的任务列表。QuestManager 也会从这里反查任务资产。</summary>
+    public override QuestDataSO[] Quests => questArray;
 
     protected override void Awake()
     {
@@ -32,10 +39,33 @@ public class Object_Merchant : Object_NPC, IInteractable
         }
     }
 
-    public void Interact()
+    public override void Interact()
     {
-        ui.merchantUI.SetupMerchantUI(merchantInventory, playerInventory, materialInventory);
-        ui.OpenMerchantUI(true);
+        // 先上报"与商人对话"的任务进度
+        ReportQuestTalk();
+
+        // 触发区外也可能被交互（玩家交互用的是自己的范围检测），此时 playerInventory 还没在
+        // OnTriggerEnter2D 里赋值，这里兜底解析，避免商店绑定到一个 null 玩家背包
+        if (playerInventory == null && Player.instance != null)
+        {
+            playerInventory = Player.instance.playerInventory;
+        }
+
+        // 先把商店面板的数据源绑定好。
+        // SetupMerchantUI 负责：绑定三个背包、订阅库存变更事件、把商人引用下发到每个槽位、
+        // 并做一次初始刷新。不调用它的话，对话里选择"打开商店"后打开的是一个
+        // 全空且拖放买卖完全失效的商店面板——这正是"商店界面打不开/打开了也没内容"的另一半原因
+        if (ui != null && ui.merchantUI != null)
+        {
+            ui.merchantUI.SetupMerchantUI(merchantInventory, playerInventory, materialInventory);
+        }
+
+        if (merchantInventory != null && playerInventory != null)
+        {
+            merchantInventory.SetInventory(playerInventory);
+        }
+
+        ui.OpenDialogueUI(firstDialogueLine);
     }
 
     protected override void OnTriggerEnter2D(Collider2D collision)

@@ -205,44 +205,105 @@ public class Inventory_Player : Inventory_Base
     {
         gold = data.gold;
 
-        foreach (var entry in data.inventory)
+        // 读档必须从"空背包"重建。
+        // AddItem 是追加语义（能并入堆叠就并入、否则占新格），若不清空，
+        // 同一场景内连续读档会把存档里的物品再叠加一遍——实测背包 209 → 418。
+        itemList.Clear();
+
+        if (data.inventory != null)
         {
-            string saveID = entry.Key;
-            int stackSize = entry.Value;
-
-            var itemData = itemDataBase.GetItemData(saveID);
-
-            if (itemData != null)
+            foreach (var entry in data.inventory)
             {
-                for (int i = 0; i < stackSize; i++)
+                string saveID = entry.Key;
+                int stackSize = entry.Value;
+
+                var itemData = itemDataBase.GetItemData(saveID);
+
+                if (itemData != null)
                 {
-                    Inventory_Item itemToLoad = new Inventory_Item(itemData);
-                    AddItem(itemToLoad);
+                    for (int i = 0; i < stackSize; i++)
+                    {
+                        Inventory_Item itemToLoad = new Inventory_Item(itemData);
+                        AddItem(itemToLoad);
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"未找到物品数据，saveID: {saveID}");
+                    continue;
                 }
             }
-            else
+        }
+
+        // 读档前先清空当前已装备状态。
+        // 否则二次读档（回主菜单再进关卡、或手动读档）时槽位已被上一次的装备占满，
+        // 下面 Find(空槽) 会返回 null，赋值时直接空引用崩溃。
+        // 同时必须逐个撤销属性修改器与持续效果，不然会残留上一份装备的加成。
+        if (equipList != null)
+        {
+            foreach (var equipSlot in equipList)
             {
-                Debug.LogWarning($"未找到物品数据，saveID: {saveID}");
-                continue;
+                if (equipSlot == null || !equipSlot.HasItem()) continue;
+
+                equipSlot.equipedItem.RemoveModifiers(player.stats);
+                equipSlot.equipedItem.RemoveItemEffect();
+                equipSlot.equipedItem = null;
             }
         }
 
-        foreach (var entry in data.equipedItems)
+        if (data.equipedItems != null)
         {
+            foreach (var entry in data.equipedItems)
+            {
+                string saveID = entry.Key;
+                ItemType itemSlotType = entry.Value;
 
-            string saveID = entry.Key;
-            ItemType itemSlotType = entry.Value;
+                ItemDataSO itemData = itemDataBase.GetItemData(saveID);
+                if (itemData == null)
+                {
+                    Debug.LogWarning($"未找到装备数据，saveID: {saveID}");
+                    continue;
+                }
 
-            ItemDataSO itemData = itemDataBase.GetItemData(saveID);
-            Inventory_Item itemToLoad = new Inventory_Item(itemData);
+                // 存档里同类型装备可能多于空槽（例如存档异常或本次已装备），
+                // 找不到空槽时跳过而不是崩溃
+                var slot = equipList.Find(s => s.slotType == itemSlotType && !s.HasItem());
+                if (slot == null)
+                {
+                    Debug.LogWarning($"没有可用的 {itemSlotType} 装备槽，跳过：{saveID}");
+                    continue;
+                }
 
-            var slot = equipList.Find(slot => slot.slotType == itemSlotType && slot.HasItem() == false);
-
-            slot.equipedItem = itemToLoad;
-            slot.equipedItem.AddModfifiers(player.stats);
-            slot.equipedItem.AddItemEffect(player);
+                Inventory_Item itemToLoad = new Inventory_Item(itemData);
+                slot.equipedItem = itemToLoad;
+                slot.equipedItem.AddModfifiers(player.stats);
+                slot.equipedItem.AddItemEffect(player);
+            }
         }
 
+        // 背包是重建出来的全新实例，快捷栏里存的旧实例引用已经游离，必须重新解析
+        ReResolveQuickItems();
+
         TriggerUpdateUI();
+    }
+
+    /// <summary>
+    /// 读档重建背包后，把快捷栏重新指向新的物品实例。
+    /// quickItems 保存的是 itemList 中的实例引用（且不参与存档），
+    /// 上面 itemList.Clear() 之后旧引用已不在背包里，
+    /// 不重新解析会导致快捷键使用时 TryUseItem 找不到物品而静默失效。
+    /// </summary>
+    private void ReResolveQuickItems()
+    {
+        if (quickItems == null) return;
+
+        for (int i = 0; i < quickItems.Length; i++)
+        {
+            if (quickItems[i] == null) continue;
+
+            // 按 itemDate 找回重建后的同种物品；已被消耗/卖掉则找不到，清空该栏位
+            quickItems[i] = FindSameItem(quickItems[i]);
+            OnQuickSlotUsed?.Invoke(i, quickItems[i]);
+        }
     }
 }

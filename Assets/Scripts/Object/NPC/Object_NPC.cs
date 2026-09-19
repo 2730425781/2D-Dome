@@ -13,7 +13,7 @@ using UnityEngine.Rendering.Universal;
 /// 走进/走出触发范围时自然拿到 player 引用，提示框的显示与隐藏完全由
 /// 物理事件驱动，不需要额外状态管理。
 /// </summary>
-public class Object_NPC : MonoBehaviour
+public class Object_NPC : MonoBehaviour, IInteractable
 {
     // 由 OnTriggerEnter2D 填充的玩家引用，供翻转判断使用，子类也可能需要它
     protected Transform player;
@@ -21,10 +21,31 @@ public class Object_NPC : MonoBehaviour
     // 在基类解析一次，避免每个子类重复 FindObjectByType
     protected UI ui;
 
+    [SerializeField] private string npcTargetQuestID;
     // 实际翻转的视觉模型；与触发碰撞体分离，方便"碰撞范围"和"外观"用不同子物体
     [SerializeField] private Transform npc;
     // 交互提示框。它必须放在世界空间，代码才能直接改 transform.position 让它浮动
     [SerializeField] private GameObject InteractToolTip;
+
+    /// <summary>本 NPC 的任务目标 ID：与 QuestDataSO.questTargetID 匹配，用于"与某人对话"类任务。</summary>
+    public string NpcTargetQuestID => npcTargetQuestID;
+
+    /// <summary>
+    /// 本 NPC 提供的任务列表。只有任务发布者（如商人）需要覆写；
+    /// 基类默认返回 null，表示该 NPC 不发布任务，但依然可以作为"对话目标"。
+    /// 供 QuestManager 在未配置任务数据库时反查任务资产。
+    /// </summary>
+    public virtual QuestDataSO[] Quests => null;
+
+    /// <summary>
+    /// 上报一次"与该 NPC 对话"的任务进度。
+    /// 必须在子类各自的 Interact() 里调用——对话时机只有各 NPC 自己清楚，
+    /// 放到触发区进出里会在玩家只是路过时就算完成。
+    /// </summary>
+    protected void ReportQuestTalk()
+    {
+        QuestManager.instance?.RegisterProgress(npcTargetQuestID);
+    }
 
     [Header("NPC提示框")]
     // 浮动速度：约每秒 1.6 个正弦周期，视觉上是"温和上下飘"而非急促抖动
@@ -45,6 +66,15 @@ public class Object_NPC : MonoBehaviour
     {
         // 场景里只有唯一一个 UI，直接按类型查找最省事
         ui = FindAnyObjectByType<UI>();
+
+        // 提示框未挂载时直接跳过：否则一进场景就在 Awake 抛空引用，
+        // 会让后面所有 NPC 逻辑（含任务上报）一起失效
+        if (InteractToolTip == null)
+        {
+            Debug.LogWarning("NPC 未绑定 InteractToolTip：" + name);
+            return;
+        }
+
         startPosition = InteractToolTip.transform.position;
         // 默认隐藏，只有玩家进入触发范围才显示
         InteractToolTip.SetActive(false);
@@ -65,7 +95,7 @@ public class Object_NPC : MonoBehaviour
     /// </summary>
     private void HandleToolTip()
     {
-        if (InteractToolTip.activeSelf)
+        if (InteractToolTip != null && InteractToolTip.activeSelf)
         {
             float yOffset = Mathf.Sin(Time.time * floatSpeed) * floatRange;
             InteractToolTip.transform.position = startPosition + new Vector3(0, yOffset);
@@ -105,7 +135,7 @@ public class Object_NPC : MonoBehaviour
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
         player = collision.transform;
-        InteractToolTip.SetActive(true);
+        if (InteractToolTip != null) InteractToolTip.SetActive(true);
     }
 
     /// <summary>
@@ -114,6 +144,11 @@ public class Object_NPC : MonoBehaviour
     /// </summary>
     protected virtual void OnTriggerExit2D(Collider2D collision)
     {
-        InteractToolTip.SetActive(false);
+        if (InteractToolTip != null) InteractToolTip.SetActive(false);
+    }
+
+    public virtual void Interact()
+    {
+
     }
 }

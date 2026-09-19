@@ -52,11 +52,17 @@ public class UI_Merchant : MonoBehaviour, IDropHandler
 
     private void UpdateSlotUI()
     {
-        if (playerInventory == null || merchantInventory == null || materialInventory == null) return;
+        // 三个区域各自独立刷新：原来三者必须同时非空才更新，
+        // 结果任一数据源缺失（例如场景里没有材料库）就会让整块商店面板全空。
+        // 现在缺谁只空谁，其余照常显示
+        if (playerInventory != null && playerSlots != null)
+            playerSlots.UpdateSlots(playerInventory.itemList);
 
-        playerSlots.UpdateSlots(playerInventory.itemList);
-        merchantSlots.UpdateSlots(merchantInventory.itemList);
-        materialSlots.UpdateSlots(materialInventory.materialStash);
+        if (merchantInventory != null && merchantSlots != null)
+            merchantSlots.UpdateSlots(merchantInventory.itemList);
+
+        if (materialInventory != null && materialSlots != null)
+            materialSlots.UpdateSlots(materialInventory.materialStash);
     }
 
     /// <summary>

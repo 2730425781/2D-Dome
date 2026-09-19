@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -26,5 +27,38 @@ public class UI_EquipSlot : UI_ItemSlot
         // 空槽点击直接返回，避免走卸下流程
         if (itemInSlot == null) return;
         inventory.UnequipItem(itemInSlot);
+    }
+
+    /// <summary>
+    /// 装备槽是"单槽"容器：它挂的物品在 equipList 的某个槽位里，而不是 itemList，
+    /// 因此不参与普通物品的可排序列表。返回 null 明确标识它不属于任何列表，
+    /// 避免基类把装备当 itemList 里的物品去做重排/交换（IndexOf 找不到会静默失败）。
+    /// </summary>
+    public override List<Inventory_Item> SlotItemList => null;
+
+    /// <summary>
+    /// 拖放：
+    /// - 背包(或其它来源)的装备拖入 → 穿戴到匹配类型的槽位。
+    ///   TryEquipItem 按 itemDate.itemType 找空槽，满了则替换旧装备。
+    /// - 从另一个装备槽拖来 → 该装备不在 itemList 里，TryEquipItem 的 FindItem 找不到它，
+    ///   所以先卸下放回背包再穿戴，实现换槽/移动。
+    /// - 装备槽之间不经过背包排序，因此也顺带绕开"背包满则拒绝换装"的限制。
+    /// - 只接受装备数据，材料等其它类型直接忽略。
+    /// </summary>
+    protected override void HandleDrop(UI_ItemSlot source)
+    {
+        if (source == null || source.itemInSlot == null) return;
+        if (source == this) return;
+
+        Inventory_Item item = source.itemInSlot;
+        if (item.itemDate is not EquipmentDateSO) return;
+
+        // 来源也是装备槽：装备不在背包里，先卸下（放回 itemList），TryEquipItem 才找得到
+        if (source is UI_EquipSlot)
+        {
+            inventory.UnequipItem(item);
+        }
+
+        inventory.TryEquipItem(item);
     }
 }

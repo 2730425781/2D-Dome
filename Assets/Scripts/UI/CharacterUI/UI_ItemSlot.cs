@@ -150,6 +150,30 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         if (source == this || source.itemInSlot == null) return;
 
+        // 从装备槽拖出的装备：它不在 itemList 里，普通重排（IndexOf）找不到它。
+        // 先把它卸下放回背包，再尽量落到目标空槽的位次，而不是追加到末尾。
+        if (source is UI_EquipSlot)
+        {
+            Inventory_Item equippedItem = source.itemInSlot;
+            inventory?.UnequipItem(equippedItem);
+
+            List<Inventory_Item> dropList = SlotItemList;
+            if (dropList != null && itemInSlot == null && dropList.Contains(equippedItem))
+            {
+                var parent = GetComponentInParent<UI_ItemSlotParent>();
+                int targetIndex = parent != null ? parent.IndexOf(this) : -1;
+                if (targetIndex >= 0 && targetIndex < dropList.Count)
+                {
+                    dropList.Remove(equippedItem);
+                    dropList.Insert(targetIndex, equippedItem);
+                }
+            }
+
+            source.RefreshUI();
+            RefreshUI();
+            return;
+        }
+
         List<Inventory_Item> list = SlotItemList;
         if (list == null || source.SlotItemList != list) return;
 
@@ -294,8 +318,17 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         if (itemInSlot == null)
         {
             itemStackSize.text = "";
-            itemIcon.sprite = defaultSlotSprite;
-            itemIcon.color = defaultSlotColor;
+            // 仅在已经捕获到默认底框时才恢复它。
+            // 面板激活时 UpdateUI→UpdateSlot 可能先于本槽自身的 Awake 执行，
+            // 而 defaultSlotSprite 恰恰是在 Awake 里捕获的。若此时就把 itemIcon.sprite
+            // 写成 defaultSlotSprite(null)，会先把场景里的默认底框冲掉，随后 Awake
+            // 又把 null 当成默认底框捕获，导致装备槽等空槽运行期显示为空。
+            // 未知默认底框时不动 sprite，交给 Awake 捕获真实底框即可。
+            if (defaultSlotSprite != null)
+            {
+                itemIcon.sprite = defaultSlotSprite;
+                itemIcon.color = defaultSlotColor;
+            }
             return;
         }
 

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Enemy : Entity
 {
+    [Header("任务信息")]
+    public string questTargetID;
+
     public Entity_Health health { get; private set; }
     public Entity_Stats stats { get; private set; }
     // ---------- 状态实例 ----------
@@ -76,6 +79,11 @@ public class Enemy : Entity
     public override void EntityDeath()
     {
         base.EntityDeath();
+
+        // 上报击杀进度：questTargetID 与 QuestDataSO.questTargetID 比对。
+        // Entity_Health.Die() 有 isDead 守卫，本方法每次死亡只会被调用一次，不会重复计数
+        QuestManager.instance?.RegisterProgress(questTargetID);
+
         stateMachine.ChangeState(deathState);
     }
 

@@ -23,6 +23,18 @@ public class GameData
     public SerializableDictionary<string, bool> skillTreeUI;         // 技能树节点解锁状态
     public SerializableDictionary<SkillType, SkillUpgradeType> skillUpgrades; // 各技能已升级分支
     public Vector3 savedCheckpoint;                     // 最近一次激活的检查点位置（重生点）
+    public Vector3 lastPlayerPosition;
+
+    public SerializableDictionary<string, bool> unlockedCheckpoints;
+    public string lastScenePlayed;
+
+    // 任务系统：以 questSaveID（资产 GUID）为键，避免保存对象引用。
+    // activeQuests  = 已接取但未领奖的任务
+    // questProgress = 任务当前累计进度（击杀/对话次数）
+    // claimedQuests = 奖励已发放的任务（含自动发放与 NPC 领取两种）
+    public SerializableDictionary<string, bool> activeQuests;
+    public SerializableDictionary<string, int> questProgress;
+    public SerializableDictionary<string, bool> claimedQuests;
 
     public GameData()
     {
@@ -34,5 +46,11 @@ public class GameData
 
         skillTreeUI = new SerializableDictionary<string, bool>();
         skillUpgrades = new SerializableDictionary<SkillType, SkillUpgradeType>();
+
+        unlockedCheckpoints = new SerializableDictionary<string, bool>();
+
+        activeQuests = new SerializableDictionary<string, bool>();
+        questProgress = new SerializableDictionary<string, int>();
+        claimedQuests = new SerializableDictionary<string, bool>();
     }
 }

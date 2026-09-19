@@ -8,7 +8,7 @@ using UnityEngine;
 /// 商店、锻造的交互逻辑完全不同且会各自扩展，拆开避免在一个类里
 /// 堆满 if/switch 分支，也便于后续给铁匠加专属行为（如强化装备）。
 /// </summary>
-public class Object_Blacksmith : Object_NPC, IInteractable
+public class Object_Blacksmith : Object_NPC
 {
     private Inventory_Player inventory;
     private Inventoty_Storage storage;
@@ -20,8 +20,12 @@ public class Object_Blacksmith : Object_NPC, IInteractable
 
     }
 
-    public void Interact()
+    public override void Interact()
     {
+        // 上报"与铁匠对话"的任务进度（如"冒险训练"这类对话目标），
+        // 再打开锻造面板；顺序放前面保证达标即刻生效
+        ReportQuestTalk();
+
         ui.storageUI.SetupStorageUI(storage);
         ui.craftUI.SetupCraftUI(storage);
 

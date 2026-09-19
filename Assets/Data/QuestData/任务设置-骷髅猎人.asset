@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98451b78225cd684fb8fbfdf4569889e, type: 3}
+  m_Name: "\u4EFB\u52A1\u8BBE\u7F6E-\u9AB7\u9AC5\u730E\u4EBA"
+  m_EditorClassIdentifier: Assembly-CSharp::QuestDataSO
+  questSaveID: c5064232748686e40b2014f94fcdcaf3
+  questName: "\u9AB7\u9AC5\u730E\u4EBA"
+  questGoal: "\u5E2E\u6211\u6253\u8D25\u9644\u8FD1\u7684\u9AB7\u9AC5"
+  description: "\u51FB\u67402\u53EA\u9AB7\u9AC5\u602A"
+  questTargetID: Enemy_Skeleton
+  requiredAmount: 2
+  rewardType: 0
+  goldReward: 1000
+  rewardItems:
+  - itemDate: {fileID: 11400000, guid: 2991f35a395fb43438c3119499635921, type: 2}
+    stackSize: 1
+    itemEffect: {fileID: 0}
+  - itemDate: {fileID: 11400000, guid: aae42979059a10d41b1deb9e31142bea, type: 2}
+    stackSize: 5
+    itemEffect: {fileID: 0}
