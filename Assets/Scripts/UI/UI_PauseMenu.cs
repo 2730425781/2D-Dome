@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,10 @@ using UnityEngine.UI;
 /// 菜单免去场景/预制体编辑，运行时动态构建。
 /// "存档"入口打开一个存档槽位选择面板（槽位 1/2/3，显示有无存档，可保存/加载/删除）。
 /// ESC 键由 UI.SetupControlsUI 里的 ToggleOptionsUI 输入动作转发到本组件的 Toggle()。
+///
+/// 文本用 TextMeshProUGUI 而非 legacy Text：
+/// 项目统一使用 AlibabaPuHuiTi SDF 字体，legacy Text 无法直接使用 TMP 字体资产；
+/// TMP 还顺带带来更清晰的字号缩放（中文字体在 legacy Text 下会明显发虚）。
 /// </summary>
 public class UI_PauseMenu : MonoBehaviour
 {
@@ -16,7 +21,7 @@ public class UI_PauseMenu : MonoBehaviour
     // 主菜单面板 与 存档面板：切换显示
     private RectTransform mainPanel;
     private RectTransform savePanel;
-    private Text[] slotStatusTexts;
+    private TextMeshProUGUI[] slotStatusTexts;
 
     [Header("菜单按钮")]
     [SerializeField] private string title = "菜单";
@@ -152,7 +157,7 @@ public class UI_PauseMenu : MonoBehaviour
         AddText(panel, "存档", 34, new Vector2(0, 200), new Vector2(360, 50));
 
         int slotCount = SaveManager.instance != null ? SaveManager.instance.SlotCount : 3;
-        slotStatusTexts = new Text[slotCount];
+        slotStatusTexts = new TextMeshProUGUI[slotCount];
 
         // 依次下移 110，把 3 行 + 返回 均匀铺在面板中心下方
         float startY = 90f;
@@ -208,7 +213,7 @@ public class UI_PauseMenu : MonoBehaviour
         return rt;
     }
 
-    private Text AddText(RectTransform parent, string content, int fontSize, Vector2 pos, Vector2 size)
+    private TextMeshProUGUI AddText(RectTransform parent, string content, float fontSize, Vector2 pos, Vector2 size)
     {
         var rt = CreateRect("Text", parent);
         rt.anchorMin = new Vector2(0.5f, 0.5f);
@@ -216,12 +221,12 @@ public class UI_PauseMenu : MonoBehaviour
         rt.anchoredPosition = pos;
         rt.sizeDelta = size;
 
-        var text = rt.gameObject.AddComponent<Text>();
+        var text = rt.gameObject.AddComponent<TextMeshProUGUI>();
         text.text = content;
         text.fontSize = fontSize;
-        text.alignment = TextAnchor.MiddleCenter;
+        text.alignment = TextAlignmentOptions.Center;
         text.color = Color.white;
-        text.font = GetFont();
+        text.font = GetFontAsset();
         text.raycastTarget = false;
         return text;
     }
@@ -245,22 +250,23 @@ public class UI_PauseMenu : MonoBehaviour
         textRt.anchorMin = Vector2.zero;
         textRt.anchorMax = Vector2.one;
         textRt.offsetMin = textRt.offsetMax = Vector2.zero;
-        Text text = textRt.gameObject.AddComponent<Text>();
+        TextMeshProUGUI text = textRt.gameObject.AddComponent<TextMeshProUGUI>();
         text.text = label;
-        text.fontSize = Mathf.Clamp((int)(size.x * 0.2f), 16, 28);
-        text.alignment = TextAnchor.MiddleCenter;
+        text.fontSize = Mathf.Clamp(size.x * 0.2f, 16f, 28f);
+        text.alignment = TextAlignmentOptions.Center;
         text.color = Color.white;
-        text.font = GetFont();
+        text.font = GetFontAsset();
         text.raycastTarget = false;
 
         return button;
     }
 
-    private Font GetFont()
+    /// <summary>
+    /// 取项目统一字体。优先用 TMP 全局默认字体（项目里已设为 AlibabaPuHuiTi SDF），
+    /// 这样以后换字体只改 TMP Settings 一处，运行时构建的面板自动跟随。
+    /// </summary>
+    private TMP_FontAsset GetFontAsset()
     {
-        Font f = null;
-        try { f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); } catch { }
-        if (f == null) { try { f = Resources.GetBuiltinResource<Font>("Arial.ttf"); } catch { } }
-        return f;
+        return TMP_Settings.defaultFontAsset;
     }
 }
