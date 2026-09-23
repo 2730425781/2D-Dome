@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 925bb6b43e4e50e439018eaa96362439, type: 3}
+  m_Name: "\u97F3\u9891\u6570\u636E\u5E93"
+  m_EditorClassIdentifier: Assembly-CSharp::AudioDataBaseSO
+  player:
+  - audioName: AttackHitSFX
+    clips:
+    - {fileID: 8300000, guid: 3b7d8809b5ee60f4eb360183ceecbe4e, type: 3}
+    - {fileID: 8300000, guid: 1b961dfaa6a2efb428600ca5b2013656, type: 3}
+    - {fileID: 8300000, guid: d9dd33543c6c7894e869896eb8389506, type: 3}
+    volume: 1
+  - audioName: AttackMissSFX
+    clips:
+    - {fileID: 8300000, guid: 05f420bc8ec4a7640afb041cec1a231a, type: 3}
+    - {fileID: 8300000, guid: aca3631b02f687044a25f576dd04cf63, type: 3}
+    - {fileID: 8300000, guid: 47cb0e90d9595fa408d4762fccc06a23, type: 3}
+    volume: 1
+  ui:
+  - audioName: ButtonClickSFX
+    clips:
+    - {fileID: 8300000, guid: 33b2cd9a46598bb4097161c1bc962ec7, type: 3}
+    volume: 1

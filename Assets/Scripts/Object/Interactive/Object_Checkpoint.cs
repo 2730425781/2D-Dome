@@ -14,10 +14,12 @@ public class Object_Checkpoint : MonoBehaviour, ISaveable, IInteractable
     [SerializeField] private Transform respawnPoint;
     public bool isActive { get; private set; }
     private Animator animator;
+    private AudioSource fireAudioSource;
 
     private void Awake()
     {
         animator = GetComponentInChildren<Animator>();
+        fireAudioSource = GetComponent<AudioSource>();
     }
 
     private void OnValidate()
@@ -48,6 +50,16 @@ public class Object_Checkpoint : MonoBehaviour, ISaveable, IInteractable
     {
         isActive = active;
         animator.SetBool("isActive", active);
+
+        if (isActive && !fireAudioSource.isPlaying)
+        {
+            fireAudioSource.Play();
+        }
+
+        if (!isActive)
+        {
+            fireAudioSource.Stop();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

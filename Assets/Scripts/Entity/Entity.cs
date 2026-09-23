@@ -9,6 +9,7 @@ public class Entity : MonoBehaviour
     protected StateMachine stateMachine;
     public Animator animator { get; private set; }
     public Rigidbody2D rb { get; private set; }
+    public Entity_SFX sfx { get; private set; }
 
     // ---------- 朝向 ----------
     // 用 facingDir 代替 bool + 方向的组合判断，facingDir 直接用于射线方向和速度方向
@@ -37,6 +38,7 @@ public class Entity : MonoBehaviour
     {
         animator = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        sfx = GetComponent<Entity_SFX>();
 
         stateMachine = new StateMachine();
     }

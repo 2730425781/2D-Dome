@@ -15,7 +15,8 @@ public class Entity_Combat : MonoBehaviour
 {
     public event Action<float> OnDoingPhysicalDamage;
     private Entity_Stats stats;
-    private Entity_VFX entity_VFX;
+    private Entity_SFX sfx;
+    private Entity_VFX vfx;
 
     public DamageScaleData basicAttackScale;
 
@@ -26,7 +27,8 @@ public class Entity_Combat : MonoBehaviour
 
     private void Awake()
     {
-        entity_VFX = GetComponent<Entity_VFX>();
+        vfx = GetComponent<Entity_VFX>();
+        sfx = GetComponent<Entity_SFX>();
         stats = GetComponent<Entity_Stats>();
     }
     /// <summary>
@@ -36,6 +38,11 @@ public class Entity_Combat : MonoBehaviour
     /// </summary>
     public void PerformAttack()
     {
+        // 用"是否命中过任意目标"而不是每次覆盖：
+        // 原来写成 targetGotHit = TakeDamage(...)，多目标时它只反映最后一个目标的结果，
+        // 于是"打中了 A、没打中 B"会先播命中音、再补一个未命中音，两种音效同时响
+        bool anyTargetHit = false;
+
         foreach (var target in GetDetectedColliders())
         {
             IDamagable damagable = target.GetComponent<IDamagable>();
@@ -61,9 +68,17 @@ public class Entity_Combat : MonoBehaviour
 
             if (targetGotHit)
             {
+                anyTargetHit = true;
                 OnDoingPhysicalDamage?.Invoke(physicalDamage);
-                entity_VFX.CreateOnHitVFX(target.transform, attackDate.isCrit, element);
+                vfx.CreateOnHitVFX(target.transform, attackDate.isCrit, element);
+                sfx?.PlayAttackHit();
             }
+        }
+
+        // 只有全部目标都没被打中，才算这次攻击"未命中"
+        if (!anyTargetHit)
+        {
+            sfx?.PlayAttackMiss();
         }
     }
 

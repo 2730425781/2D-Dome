@@ -1,16 +1,17 @@
 {
     "platforms": [
-        "codex"
+        "codex",
+        "dsh"
     ],
     "optionalSkills": [],
     "skillVersions": [
         {
             "id": "unity-mcp-workflow",
-            "version": "1.0.3"
+            "version": "1.0.4"
         },
         {
             "id": "unity-ui-composition",
-            "version": "1.0.1"
+            "version": "1.0.4"
         }
     ]
 }

@@ -17,5 +17,5 @@ MonoBehaviour:
   textLine:
   - "\u5173\u95ED\u5173\u95ED\u5173\u95ED\u5173\u95ED\u5173\u95ED"
   actionLine: 
-  actionType: 2
+  actionType: 4
   choiceLines: []

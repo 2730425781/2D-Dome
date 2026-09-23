@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2784266344081029225}
   - component: {fileID: 7515849376255965830}
   m_Layer: 15
-  m_Name: Object-Waypoint - Enter - Level_1
+  m_Name: Object-Waypoint - Exit - Level_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48,9 +48,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd2e7c4c21283704c842e372deb18419, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Object_Waypoint
-  transferToScene: Level_1
-  waypointType: 0
-  conntedWaypoint: 1
+  transferToScene: Level_2
+  waypointType: 1
+  conntedWaypoint: 0
   respwanPoint: {fileID: 2525397967564736329}
 --- !u!61 &7515849376255965830
 BoxCollider2D:
@@ -160,7 +160,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 3834226041104818860, guid: e051d333098d80f40bbff37459530ef0, type: 2}
+  - {fileID: -8191231966951190106, guid: 367c3ea949589e84197843f4d729cff3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -204,10 +204,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: text
+  m_text: "\u7B2C\u4E8C\u5173"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: e051d333098d80f40bbff37459530ef0, type: 2}
-  m_sharedMaterial: {fileID: 3834226041104818860, guid: e051d333098d80f40bbff37459530ef0, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 367c3ea949589e84197843f4d729cff3, type: 2}
+  m_sharedMaterial: {fileID: -8191231966951190106, guid: 367c3ea949589e84197843f4d729cff3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
