@@ -19,6 +19,7 @@
 *.physicsMaterial2D   text eol=lf
 *.spriteatlas         text eol=lf
 *.spriteatlasv2       text eol=lf
+*.mixer               text eol=lf
 *.mask                text eol=lf
 *.asmdef              text eol=lf
 *.asmref              text eol=lf
