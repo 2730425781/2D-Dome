@@ -7,6 +7,10 @@ public class AudioDataBaseSO : ScriptableObject
     public List<AudioClipData> player;
     public List<AudioClipData> ui;
 
+    [Header("音乐列表")]
+    public List<AudioClipData> mainMenuMusic;
+    public List<AudioClipData> levelMusic;
+
     private Dictionary<string, AudioClipData> clipCollection;
 
     private void OnEnable()
@@ -21,6 +25,8 @@ public class AudioDataBaseSO : ScriptableObject
 
         AddToCollection(player);
         AddToCollection(ui);
+        AddToCollection(mainMenuMusic);
+        AddToCollection(levelMusic);
     }
 
     public AudioClipData GetAudioData(string audioName)

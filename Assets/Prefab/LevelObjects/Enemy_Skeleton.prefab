@@ -72,7 +72,7 @@ AudioSource:
   m_GameObject: {fileID: 3716713876564664163}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 4874009530491188495, guid: 9a3712bb73e2a0f4882ed3db8cb02d25, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
@@ -565,7 +565,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc1f59ab5b1f53343ae9840c406be1f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entity_SFX
-  sountDistance: 15
+  soundDistance: 15
   attackHit: 0
   attackMiss: 1
 --- !u!1 &5160208211423954451

@@ -85,7 +85,6 @@ public class GameManager : MonoBehaviour, ISaveable
         }
 
         SceneManager.LoadScene(sceneName);
-
         dataLoaded = false;
 
         yield return null;              //加载游戏后需要延迟一帧
@@ -96,13 +95,6 @@ public class GameManager : MonoBehaviour, ISaveable
         }
 
         fadeScreen = FindFadeScreenUI();
-        if (fadeScreen != null)
-        {
-            fadeScreen.DoFadeIn();
-            // 等淡入真正结束再清标记：期间若又触发切换会重新置位，不会被这里误清
-            yield return fadeScreen.fadeEffectCo;
-        }
-
         IsChangingScene = false;
 
         Player player = Player.instance;
@@ -115,6 +107,13 @@ public class GameManager : MonoBehaviour, ISaveable
         if (position != Vector3.zero)
         {
             Player.instance.TeleportPlayer(position);
+        }
+
+        if (fadeScreen != null)
+        {
+            fadeScreen.DoFadeIn();
+            // 等淡入真正结束再清标记：期间若又触发切换会重新置位，不会被这里误清
+            yield return fadeScreen.fadeEffectCo;
         }
     }
 

@@ -30,3 +30,13 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 33b2cd9a46598bb4097161c1bc962ec7, type: 3}
     volume: 1
+  mainMenuMusic:
+  - audioName: mainMenuBgm
+    clips:
+    - {fileID: 8300000, guid: 06bf4e78aaac575428033a5ca79459b4, type: 3}
+    volume: 1
+  levelMusic:
+  - audioName: battleBgm
+    clips:
+    - {fileID: 8300000, guid: 40f3ef4b887e92d4e89f69a0c933e43f, type: 3}
+    volume: 1

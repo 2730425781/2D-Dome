@@ -13,7 +13,6 @@ public class SaveManager : MonoBehaviour
 {
     public static SaveManager instance;
 
-    private FileDataHandler dataHandler;
     private GameData gameData;
     private List<ISaveable> allSaveable;
 
@@ -40,10 +39,10 @@ public class SaveManager : MonoBehaviour
     }
 
     // 为指定槽位构造独立的文件处理器：每个槽位对应一个独立文件，互不覆盖
-    private FileDataHandler GetDataHandler(int slot)
+    private FileDataHandler<GameData> GetDataHandler(int slot)
     {
         string slotFile = $"{GetBaseFileName()}_{slot}.json";
-        return new FileDataHandler(Application.persistentDataPath, slotFile, encryptData);
+        return new FileDataHandler<GameData>(Application.persistentDataPath, slotFile, encryptData);
     }
 
     // 规范化基础文件名：去掉可能残留的 .json 后缀，避免出现 "YS.json_1.json" 这种双扩展名
